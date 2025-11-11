@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hyrule_football"
+version = "0.1.0"
+description = "A LangChain-based football analysis project"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain",
+    "langchain-community",
+    "langchain-core",
+    "langchain-openai",
+    "langchain-deepseek",
+    # 环境变量
+    "python-dotenv",
+    # 向量检索
+    "faiss-cpu",
+    # Embeddings/LLM
+    "dashscope"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "flake8>=6.1.0",
+    "mypy>=1.7.0",
+    "ipython>=8.18.0",
+    "jupyter>=1.0.0",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py312']
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --cov=src/hyrule_football --cov-report=html --cov-report=term"
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+

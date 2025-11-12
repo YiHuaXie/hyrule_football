@@ -14,7 +14,7 @@
   - updateDate / updateTime 表示赔率更新时间
 
 - 注意事项：
-  - 赔率会随市场浮动，每个赔率字段有对应的浮动标志（hf、df、af）；
+  - 赔率会随市场浮动，每个赔率字段有对应的浮动值（hf、df、af）；
   - `goalLine` 和 `goalLineValue` 一般为空，只有让球玩法才有值；
 
 ## 字段定义
@@ -24,9 +24,9 @@
 | h    | 主胜赔率 | string | 赔率浮动值，示例: "2.53" |
 | d    | 平局赔率 | string | 赔率浮动值，示例: "3.15" |
 | a    | 客胜赔率 | string | 赔率浮动值，示例: "2.40" |
-| hf   | 主胜浮动标志 | string |  |
-| df   | 平局浮动标志 | string |  |
-| af   | 客胜浮动标志 | string |  |
+| hf   | 主胜浮动值 | string |  |
+| df   | 平局浮动值 | string |  |
+| af   | 客胜浮动值 | string |  |
 | goalLine | 让球盘口 | string | 一般为空，让球玩法才有值 |
 | goalLineValue | 让球数值 | string | 一般为空 |
 | updateDate | 更新日期 | string | 示例: "2025-11-11" |

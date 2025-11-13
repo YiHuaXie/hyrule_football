@@ -19,6 +19,9 @@ dependencies = [
     "faiss-cpu",
     # Embeddings/LLM
     "dashscope"
+    "unstructured",
+    "markdown",
+    "lxml"
 ]
 
 [project.optional-dependencies]

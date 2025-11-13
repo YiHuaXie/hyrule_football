@@ -154,3 +154,5 @@ logs/
 temp/
 tmp/
 
+# 向量数据库
+data/vectordb/

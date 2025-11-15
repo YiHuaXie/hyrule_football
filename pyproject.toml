@@ -2,6 +2,9 @@
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project]
 name = "hyrule_football"
 version = "0.1.0"
@@ -18,10 +21,10 @@ dependencies = [
     # 向量检索
     "faiss-cpu",
     # Embeddings/LLM
-    "dashscope"
+    "dashscope",
     "unstructured",
     "markdown",
-    "lxml"
+    "redis",
 ]
 
 [project.optional-dependencies]

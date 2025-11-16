@@ -1,13 +1,15 @@
-"""
-Main entry point for the Hyrule Football application.
-"""
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from hyrule_football.clients import start_lark_client
+from hyrule_football.utils import configure_root_logger
 
 
 def main():
-    """Main function to run the application."""
-    print("Welcome to Hyrule Football!")
+    configure_root_logger()
+    start_lark_client()
 
 
 if __name__ == "__main__":
     main()
-

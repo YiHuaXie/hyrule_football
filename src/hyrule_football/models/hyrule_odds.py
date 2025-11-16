@@ -125,3 +125,4 @@ class HYREuroOddsRange(BaseModel):
     hight_d: Annotated[float, Field(..., description="平局赔率(D) 高位")]
     low_a: Annotated[float, Field(..., description="客胜赔率(A) 低位")]
     hight_a: Annotated[float, Field(..., description="客胜赔率(A) 高位")]
+    hight_h: Annotated[float, Field(..., description="主胜赔率(H) 高位")]

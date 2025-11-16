@@ -3,7 +3,7 @@ from hyrule_football.models.hyrule_odds import HYRStandardOdds
 from hyrule_football.core.odds_engine import OddsEngine
 from dashscope import MultiModalConversation
 from typing import List
-from hyrule_football.agents.prompts.odd_image_orc_prompts import ODDS_MARKDOWN_TITLE_PROMPT
+from hyrule_football.prompts.odds_orc_prompts import ODDS_MARKDOWN_TITLE_PROMPT
 from hyrule_football.knowledge import ODDS_KNOWLEDGE_DIR
 from hyrule_football.store import OddsStore
 from hyrule_football.utils import get_logger

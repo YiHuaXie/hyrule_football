@@ -25,6 +25,11 @@ dependencies = [
     "unstructured",
     "markdown",
     "redis",
+    "lark-oapi (>=1.4.24,<2.0.0)",
+    "readability-lxml (>=0.8.4.1,<0.9.0.0)",
+    "beautifulsoup4 (>=4.14.2,<5.0.0)",
+    "lxml (>=6.0.2,<7.0.0)",
+    "html2text (>=2025.4.15,<2026.0.0)",
 ]
 
 [project.optional-dependencies]

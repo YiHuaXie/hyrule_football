@@ -1,7 +1,7 @@
 import redis
 import json
 from typing import List, Optional
-from hyrule_football.models.hyrule_odds import HYRStandardOdds, HYREuroOdds, HYRAsiaOdds
+from hyrule_football.models import StandardOdds, EuroOdds, AsiaOdds
 import os
 
 
@@ -35,21 +35,21 @@ class OddsStore:
         """生成亚盘索引 key"""
         return f"odds:{system_name}:asia:{goal_line}:{water_level}"
 
-    def _make_euro_field(self, odds: HYRStandardOdds) -> str:
+    def _make_euro_field(self, odds: StandardOdds) -> str:
         """生成欧赔 Hash field (h:d:a)"""
         return f"{odds.h}:{odds.d}:{odds.a}"
 
-    def _make_euro_field_from_euro(self, euro: HYREuroOdds) -> str:
+    def _make_euro_field_from_euro(self, euro: EuroOdds) -> str:
         """从 HYREuroOdds 生成欧赔 Hash field"""
         return f"{euro.h}:{euro.d}:{euro.a}"
 
-    def _odds_to_json(self, odds: HYRStandardOdds) -> str:
-        """将 HYRStandardOdds 转换为 JSON 字符串"""
+    def _odds_to_json(self, odds: StandardOdds) -> str:
+        """将 StandardOdds 转换为 JSON 字符串"""
         return json.dumps(odds.model_dump(), ensure_ascii=False, sort_keys=True)
 
-    def _json_to_odds(self, json_str: str) -> HYRStandardOdds:
-        """将 JSON 字符串转换为 HYRStandardOdds"""
-        return HYRStandardOdds(**json.loads(json_str))
+    def _json_to_odds(self, json_str: str) -> StandardOdds:
+        """将 JSON 字符串转换为 StandardOdds"""
+        return StandardOdds(**json.loads(json_str))
 
     # -----------------------------
     # Create / Update
@@ -58,7 +58,7 @@ class OddsStore:
     def save_system_odds(
         self,
         system_name: str,
-        odds_list: List[HYRStandardOdds],
+        odds_list: List[StandardOdds],
         merge: bool = False,
     ):
         if not odds_list:
@@ -97,7 +97,7 @@ class OddsStore:
     # READ
     # -----------------------------
 
-    def load_system_odds(self, system_name: str) -> List[HYRStandardOdds]:
+    def load_system_odds(self, system_name: str) -> List[StandardOdds]:
         euro_key = self._make_euro_key(system_name)
         all_json = self.r.hvals(euro_key)
 
@@ -133,7 +133,7 @@ class OddsStore:
 
         pipeline.execute()
 
-    def delete_odds_by_euro(self, system_name: str, euro: HYREuroOdds):
+    def delete_odds_by_euro(self, system_name: str, euro: EuroOdds):
         """删除某个体系中指定欧赔的数据"""
         euro_key = self._make_euro_key(system_name)
         euro_field = self._make_euro_field_from_euro(euro)
@@ -160,11 +160,11 @@ class OddsStore:
     # UPDATE 单条或批量
     # -----------------------------
 
-    def update_odds(self, system_name: str, new_odds: HYRStandardOdds):
+    def update_odds(self, system_name: str, new_odds: StandardOdds):
         """更新某个标准赔率数据，如果不存在则新增"""
         self.update_odds_list(system_name, [new_odds])
 
-    def update_odds_list(self, system_name: str, new_odds_list: List[HYRStandardOdds]):
+    def update_odds_list(self, system_name: str, new_odds_list: List[StandardOdds]):
         """更新某个体系的多条欧赔数据，如果不存在则新增"""
         if not new_odds_list:
             return
@@ -210,7 +210,7 @@ class OddsStore:
     # QUERY 条件查询
     # -----------------------------
 
-    def query_odds_for_euro(self, system_name: str, euro: HYREuroOdds) -> Optional[HYRStandardOdds]:
+    def query_odds_for_euro(self, system_name: str, euro: EuroOdds) -> Optional[StandardOdds]:
         """查询某体系的标准赔率（根据欧赔 h, d, a 三个字段）"""
         euro_key = self._make_euro_key(system_name)
         euro_field = self._make_euro_field_from_euro(euro)
@@ -221,7 +221,7 @@ class OddsStore:
 
         return self._json_to_odds(odds_json)
 
-    def query_odds_for_asia(self, system_name: str, asia: HYRAsiaOdds) -> List[HYRStandardOdds]:
+    def query_odds_for_asia(self, system_name: str, asia: AsiaOdds) -> List[StandardOdds]:
         """
         查询某体系的符合亚盘的所有标准赔率（根据亚盘）
         这是主要查询场景，性能优化重点！

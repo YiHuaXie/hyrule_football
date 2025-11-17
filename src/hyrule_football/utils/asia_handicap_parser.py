@@ -1,22 +1,31 @@
 import re
 
 CN_NUM_MAP = {
-    "零": 0, "〇": 0,
-    "一": 1, "二": 2, "两": 2,
-    "三": 3, "四": 4, "五": 5,
-    "六": 6, "七": 7, "八": 8,
-    "九": 9, "十": 10
+    "零": 0,
+    "〇": 0,
+    "一": 1,
+    "二": 2,
+    "两": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
 }
+
 
 def cn_to_int(cn: str) -> int:
     """支持 0~20 的中文数字，例如 十五、十三、十九"""
     if cn == "十":
         return 10
-    if len(cn) == 2 and cn[0] == "十":    # 十三→13
+    if len(cn) == 2 and cn[0] == "十":  # 十三→13
         return 10 + CN_NUM_MAP[cn[1]]
-    if len(cn) == 2 and cn[1] == "十":    # 三十（扩展）
+    if len(cn) == 2 and cn[1] == "十":  # 三十（扩展）
         return CN_NUM_MAP[cn[0]] * 10
-    if len(cn) == 3 and cn[1] == "十":    # 二十三→23
+    if len(cn) == 3 and cn[1] == "十":  # 二十三→23
         return CN_NUM_MAP[cn[0]] * 10 + CN_NUM_MAP[cn[2]]
     return CN_NUM_MAP.get(cn, None)
 

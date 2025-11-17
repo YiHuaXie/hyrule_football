@@ -4,27 +4,38 @@ import re
 from hyrule_football.models import MatchInfo
 from hyrule_football.store import HotMatchStore
 from hyrule_football.utils import get_logger
-from typing import List
+from typing import List, Optional
+import os
 
 logger = get_logger(__name__)
 
+store = HotMatchStore()
+
 
 def get_hot_match_list() -> List[MatchInfo]:
-    store = HotMatchStore()
     matches = store.list_matches()
     if not matches:
         matches = request_hot_match_list()
     return matches
 
 
+def get_match_for_name(match_name: str) -> List[MatchInfo]:
+    matches = store.list_matches()
+    if not matches:
+        matches = request_hot_match_list()
+    return [m for m in matches if match_name in m.match_description]
+
+
 def request_hot_match_list() -> List[MatchInfo]:
     try:
-        url = "http://ouhe.aiball365.com/"
+        url = os.getenv("OUHE_HTML_URL")
         response = requests.get(url, proxies={"http": None}, timeout=5)
         html = response.text
         soup = BeautifulSoup(html, "html.parser")
 
-        # 提取比赛主客队
+        # 1. 提取比赛主客队
+        # 提取所有 span 标签，从热门赛事和热门排行中间的span提取比赛
+        # 根据 VS 前后的 span 标签获取主客队信息
         spans = soup.find_all("span")
 
         start = None
@@ -38,7 +49,6 @@ def request_hot_match_list() -> List[MatchInfo]:
             if s.get_text(strip=True) == "热门排行":
                 end = i
                 break
-        # 从热门赛事和热门排行中间提取比赛
         section = spans[start + 1 : end]
 
         teams = []
@@ -74,7 +84,6 @@ def request_hot_match_list() -> List[MatchInfo]:
         logger.info(f"✅ hot match list: {match_list}")
 
         # 4.保存到缓存
-        store = HotMatchStore()
         store.save_matches(match_list)
 
         return match_list

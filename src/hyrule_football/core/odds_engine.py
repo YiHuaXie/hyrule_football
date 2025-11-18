@@ -3,14 +3,14 @@ from markdown import markdown
 from bs4 import BeautifulSoup
 from typing import List
 import os
-from hyrule_football.store import OddsStore
+from hyrule_football.store import get_odds_store
 from hyrule_football.models import StandardOdds, EuroOdds, AsiaOdds, EuroStandardOddsRange
 
 
 class OddsEngine:
 
     def __init__(self, system: str):
-        store = OddsStore()
+        store = get_odds_store()
         self.standard_odds_list = store.load_system_odds(system)
 
     # @staticmethod

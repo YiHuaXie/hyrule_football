@@ -2,7 +2,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator
 from typing_extensions import Annotated
 from .match import MatchInfo
-from hyrule_football.utils import water_level_standadrd_str, parse_asia_handicap_smart
+from hyrule_football.utils import water_level_str, asia_handicap_float
 
 
 class Company(BaseModel):
@@ -29,14 +29,14 @@ class AsiaOdds(BaseModel):
 
     @field_validator("water_level", mode="before")
     def to_water_level(cls, v):
-        return water_level_standadrd_str(v)
+        return water_level_str(v)
 
     @field_validator("goal_line", mode="before")
     def to_goal_line(cls, v):
         if isinstance(v, float):
             v = 0.0 if v == 0.0 else v
             return v
-        return parse_asia_handicap_smart(v)
+        return asia_handicap_float(v)
 
 
 class EuroOdds(BaseModel):

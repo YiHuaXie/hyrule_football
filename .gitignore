@@ -149,10 +149,10 @@ cython_debug/
 *.db
 *.sqlite
 *.log
-data/
+# data/
 logs/
 temp/
 tmp/
 
 # 向量数据库
-data/vectordb/
+# data/vectordb/

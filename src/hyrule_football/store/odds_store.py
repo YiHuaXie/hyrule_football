@@ -1,8 +1,18 @@
 import redis
 import json
 from typing import List, Optional
+from data import DATA_ODDS_DIR
+from dotenv import load_dotenv as _load_dotenv
+from hyrule_football.utils import get_logger
 from hyrule_football.models import StandardOdds, EuroOdds, AsiaOdds
+
 import os
+
+_load_dotenv()
+
+logger = get_logger(__name__)
+
+_league_list = ["英超", "西甲", "法甲", "意甲", "德甲", "通用"]
 
 
 class OddsStore:
@@ -23,6 +33,9 @@ class OddsStore:
         redis_url = os.getenv("REDIS_DEFAULT_URL")
         self.r = redis.Redis.from_url(redis_url, decode_responses=True)
 
+        if not self._has_any_odds:
+            self._import_all_odds_list()
+
     # -----------------------------
     # 辅助方法
     # -----------------------------
@@ -35,13 +48,17 @@ class OddsStore:
         """生成亚盘索引 key"""
         return f"odds:{system_name}:asia:{goal_line}:{water_level}"
 
+    def _asia_key_pattern(self, system_name: str):
+        """生成亚盘索引 key 的通配符"""
+        return f"odds:{system_name}:asia:*"
+
     def _make_euro_field(self, odds: StandardOdds) -> str:
-        """生成欧赔 Hash field (h:d:a)"""
-        return f"{odds.h}:{odds.d}:{odds.a}"
+        """生成欧赔 Hash field (w:d:l)"""
+        return f"{odds.w}:{odds.d}:{odds.l}"
 
     def _make_euro_field_from_euro(self, euro: EuroOdds) -> str:
-        """从 HYREuroOdds 生成欧赔 Hash field"""
-        return f"{euro.h}:{euro.d}:{euro.a}"
+        """从 EuroOdds 生成欧赔 Hash field"""
+        return f"{euro.w}:{euro.d}:{euro.l}"
 
     def _odds_to_json(self, odds: StandardOdds) -> str:
         """将 StandardOdds 转换为 JSON 字符串"""
@@ -50,6 +67,24 @@ class OddsStore:
     def _json_to_odds(self, json_str: str) -> StandardOdds:
         """将 JSON 字符串转换为 StandardOdds"""
         return StandardOdds(**json.loads(json_str))
+
+    @property
+    def _has_any_odds(self) -> bool:
+        # 有任何一个以 "odds:" 开头的 key，就说明有数据
+        return next(self.r.scan_iter("odds:*"), None) is not None
+
+    def _import_all_odds_list(self):
+        DATA_ODDS_DIR.mkdir(parents=True, exist_ok=True)
+        for league in _league_list:
+            for system_no in range(92, 97):
+                system_name = f"{league}{system_no}"
+                path = DATA_ODDS_DIR / f"{system_name}.json"
+                if not path.exists():
+                    continue
+
+                with path.open("r", encoding="utf-8") as f:
+                    odds_list = [StandardOdds(**item) for item in json.load(f)]
+                    self.save_system_odds(system_name, odds_list=odds_list)
 
     # -----------------------------
     # Create / Update
@@ -106,7 +141,7 @@ class OddsStore:
 
         odds_list = [self._json_to_odds(j) for j in all_json]
 
-        return sorted(odds_list, key=lambda x: x.h)
+        return sorted(odds_list, key=lambda x: (x.w, x.d, x.l))
 
     def get_system_count(self, system_name: str) -> int:
         """获取体系的数据总数"""
@@ -127,7 +162,7 @@ class OddsStore:
 
         # 2. 删除所有亚盘索引
         # 使用 scan_iter 遍历所有匹配的 key
-        asia_pattern = f"odds:{system_name}:asia:*"
+        asia_pattern = self._asia_key_pattern(system_name)
         for key in self.r.scan_iter(asia_pattern):
             pipeline.delete(key)
 
@@ -236,3 +271,42 @@ class OddsStore:
 
         # 按 h 值排序返回
         return sorted(odds_list, key=lambda x: x.h)
+
+
+_singleton_store: OddsStore | None = None
+
+
+def odds_store_shared() -> OddsStore:
+    global _singleton_store
+    if _singleton_store is None:
+        _singleton_store = OddsStore()
+    return _singleton_store
+
+
+def _delete_all_odds():
+    store = odds_store_shared()
+    pipeline = store.r.pipeline()
+    for key in store.r.scan_iter("odds:*"):
+        pipeline.delete(key)
+    pipeline.execute()
+
+
+def _export_all_odds():
+    DATA_ODDS_DIR.mkdir(parents=True, exist_ok=True)
+    store = odds_store_shared()
+    for league in _league_list:
+        for system_no in range(92, 97):
+            system_name = f"{league}{system_no}"
+            odds_list = store.load_system_odds(system_name)
+            if not odds_list:
+                continue
+
+            output_path = DATA_ODDS_DIR / f"{system_name}.json"
+            with output_path.open("w", encoding="utf-8") as f:
+                json.dump(
+                    [odds.model_dump() for odds in odds_list], f, ensure_ascii=False, indent=2
+                )
+            logger.info(f"体系：{system_name}，数据量：{len(odds_list)}")
+
+
+# store = odds_store_shared()

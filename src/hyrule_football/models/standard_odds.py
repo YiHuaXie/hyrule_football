@@ -7,9 +7,9 @@ class StandardOdds(BaseModel):
 
     system: Annotated[str, Field(..., description="体系名称", alias="体系")]
     interval: Annotated[str, Field(..., description="区间", alias="区间")]
-    h: Annotated[float, Field(..., description="欧指-主胜赔率(H)", alias="胜")]
-    d: Annotated[float, Field(..., description="欧指-平局赔率(D)", alias="平")]
-    a: Annotated[float, Field(..., description="欧指-客胜赔率(A)", alias="负")]
+    w: Annotated[float, Field(..., description="欧指-胜赔率(Win)", alias="胜")]
+    d: Annotated[float, Field(..., description="欧指-平赔率(Draw)", alias="平")]
+    l: Annotated[float, Field(..., description="欧指-负赔率(Lose)", alias="负")]
     return_rate: Annotated[float, Field(..., description="返还率(%)", alias="返还率")]
     goal_line: Annotated[float, Field(..., description="亚盘-让球盘口", alias="让球盘口")]
     water_level: Annotated[str, Field(..., description="亚盘-水位（赔率）", alias="水位")]
@@ -20,9 +20,9 @@ class StandardOdds(BaseModel):
             "examples": [
                 {"system": "西甲95"},
                 {"interval": "0区"},
-                {"h": 1.38},
+                {"w": 1.38},
                 {"d": 4.4},
-                {"a": 8.0},
+                {"l": 8.0},
                 {"return_rate": 94.5},
                 {"goal_line": -1.25},
                 {"water_level": "低"},
@@ -32,7 +32,7 @@ class StandardOdds(BaseModel):
 
     @property
     def markdown_text(self):
-        return f"{self.system} | {self.interval} | {self.h} | {self.d} | {self.a} | {self.return_rate} | {self.goal_line} | {self.water_level} |"
+        return f"{self.system} | {self.interval} | {self.w} | {self.d} | {self.l} | {self.return_rate} | {self.goal_line} | {self.water_level} |"
 
     @model_validator(mode="before")
     @classmethod
@@ -42,6 +42,7 @@ class StandardOdds(BaseModel):
             if k in values and v not in values:
                 values[v] = values[k]
                 del values[k]
+        # print(values)
 
         # 校验字段是否缺失
         for field in cls._required_fields():
@@ -51,7 +52,7 @@ class StandardOdds(BaseModel):
         values["system"] = values["system"].replace("体系", "")
 
         # 数值字段转换
-        for field in ["h", "d", "a", "return_rate", "goal_line"]:
+        for field in ["w", "d", "l", "return_rate", "goal_line"]:
             try:
                 float_value = float(values[field])
                 float_value = 0.0 if float_value == 0.0 else float_value
@@ -59,12 +60,12 @@ class StandardOdds(BaseModel):
             except (TypeError, ValueError):
                 raise ValueError(f"❌ 字段 {field} 必须是数字，当前值: {values[field]}")
 
-        if values["h"] < 1.0:
-            raise ValueError("❌ 欧指-主胜赔率(H)不能小于1.0")
+        if values["w"] < 1.0:
+            raise ValueError("❌ 欧指-胜赔率不能小于1.0")
         if values["d"] < 1.0:
-            raise ValueError("❌ 欧指-平局赔率(D)不能小于1.0")
-        if values["a"] < 1.0:
-            raise ValueError("❌ 欧指-客胜赔率(A)不能小于1.0")
+            raise ValueError("❌ 欧指-平赔率不能小于1.0")
+        if values["l"] < 1.0:
+            raise ValueError("❌ 欧指-负赔率不能小于1.0")
         if values["return_rate"] < 0 or values["return_rate"] > 100:
             raise ValueError("❌ 返还率(%)必须在0到100之间")
         return values
@@ -74,9 +75,11 @@ class StandardOdds(BaseModel):
         return {
             "体系": "system",
             "区间": "interval",
-            "胜": "h",
+            "h": "w",
+            "胜": "w",
             "平": "d",
-            "负": "a",
+            "a": "l",
+            "负": "l",
             "返还率": "return_rate",
             "让球盘口": "goal_line",
             "水位": "water_level",
@@ -87,9 +90,9 @@ class StandardOdds(BaseModel):
         return [
             "system",
             "interval",
-            "h",
+            "w",
             "d",
-            "a",
+            "l",
             "return_rate",
             "goal_line",
             "water_level",

@@ -1,4 +1,3 @@
-from .lark_client import start_lark_client
 from .http_client import (
     HTTPClient,
     HTTPClientError,
@@ -8,7 +7,6 @@ from .http_client import (
 )
 
 __all__ = [
-    "start_lark_client",
     "HTTPClient",
     "HTTPClientError",
     "HTTPStatusError",

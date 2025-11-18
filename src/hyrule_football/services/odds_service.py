@@ -133,7 +133,3 @@ def get_odds_for_match(
         odds_info.away_summary_list.append(away_odds_summary)
 
     return odds_info
-
-
-# def get_odds_for_match(match_name: str) :
-#     pass

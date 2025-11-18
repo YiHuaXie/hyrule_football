@@ -19,6 +19,7 @@ CN_NUM_MAP = {
 
 def cn_to_int(cn: str) -> int:
     """支持 0~20 的中文数字，例如 十五、十三、十九"""
+
     if cn == "十":
         return 10
     if len(cn) == 2 and cn[0] == "十":  # 十三→13
@@ -77,7 +78,7 @@ def parse_single_part(part: str) -> float:
 # ---------------------------------------------
 # 主入口：支持受让、分盘、所有写法
 # ---------------------------------------------
-def parse_asia_handicap_smart(hdp: str) -> float:
+def asia_handicap_float(hdp: str) -> float:
     s = hdp.strip()
 
     # -----------------------

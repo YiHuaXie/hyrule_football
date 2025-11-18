@@ -12,13 +12,6 @@ logger = get_logger(__name__)
 store = HotMatchStore()
 
 
-def get_hot_match_list() -> List[MatchInfo]:
-    matches = store.list_matches()
-    if not matches:
-        matches = request_hot_match_list()
-    return matches
-
-
 def get_match_for_name(match_name: str) -> List[MatchInfo]:
     matches = store.list_matches()
     if not matches:

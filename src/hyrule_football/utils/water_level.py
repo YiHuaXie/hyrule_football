@@ -1,4 +1,4 @@
-def water_level_standadrd_str(input_value: str | float) -> str:
+def water_level_str(input_value: str | float) -> str:
     """标准化亚盘水位"""
     float_input = 0.0
     if isinstance(input_value, str):

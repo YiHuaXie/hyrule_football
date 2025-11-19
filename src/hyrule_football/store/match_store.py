@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import redis
 
-from hyrule_football.models.match import MatchInfo
+from hyrule_football.models import MatchInfo
 
 
 class HotMatchStore:
@@ -66,3 +66,13 @@ class HotMatchStore:
     def clear_all(self) -> None:
         """清空所有 MatchInfo 缓存"""
         self.r.delete(self.KEY)
+
+
+_singleton_store: HotMatchStore | None = None
+
+
+def get_match_store() -> HotMatchStore:
+    global _singleton_store
+    if _singleton_store is None:
+        _singleton_store = HotMatchStore()
+    return _singleton_store

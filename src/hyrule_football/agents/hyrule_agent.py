@@ -8,7 +8,13 @@ from dotenv import load_dotenv as _load_dotenv
 from hyrule_football.utils import get_logger
 from hyrule_football.prompts.hyrule_prompt import HyrulePrompt
 
-from hyrule_football.tools import get_match_list
+from hyrule_football.tools import (
+    get_match_list,
+    get_match_for_team,
+    get_match_for_matchup,
+    get_odds_info_for_match,
+    plan_match_odds_query,
+)
 
 
 # from hyrule_football.store import OddsStore
@@ -36,6 +42,10 @@ class HyruleAgent:
 
         self.tools = [
             get_match_list,
+            get_match_for_team,
+            get_match_for_matchup,
+            get_odds_info_for_match,
+            plan_match_odds_query,
         ]
         self.prompt = HyrulePrompt().prompt_structure()
         # 创建 Agent（单智能体）

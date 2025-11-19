@@ -1,8 +1,5 @@
-from hyrule_football.utils import opposite_water_level
-from markdown import markdown
-from bs4 import BeautifulSoup
 from typing import List
-import os
+from typing import Optional, Tuple, List
 from hyrule_football.store import get_odds_store
 from hyrule_football.models import StandardOdds, EuroOdds, AsiaOdds, EuroStandardOddsRange
 
@@ -12,6 +9,49 @@ class OddsEngine:
     def __init__(self, system: str):
         store = get_odds_store()
         self.standard_odds_list = store.load_system_odds(system)
+
+    @property
+    def euro_odds_list(self) -> List[EuroOdds]:
+        """转化为欧指赔率列表"""
+        return [
+            EuroOdds(w=odds.w, d=odds.d, l=odds.l, return_rate=odds.return_rate)
+            for odds in self.standard_odds_list
+        ]
+
+    def filter_standard_odds_from_asia(self, asia: AsiaOdds) -> List[StandardOdds]:
+        """过滤出符合 AsiaOdds 的赔率数据"""
+        odds_list = []
+        for odds in self.standard_odds_list:
+            if odds.water_level != asia.water_level:
+                continue
+            if odds.goal_line != asia.goal_line:
+                continue
+            odds_list.append(odds)
+
+        return odds_list
+
+    def euro_odds_pattern(self, euro: EuroOdds, asia: AsiaOdds) -> Optional[Tuple[str, str, str]]:
+        """通过亚盘得出欧指胜平负的格局数据"""
+
+        odds_list = self.filter_standard_odds_from_asia(asia)
+
+        if not odds_list:
+            return None
+
+        odds_range = EuroStandardOddsRange.from_standard_odds_list(odds_list)
+
+        def _level(value: float, low: float, high: float) -> str:
+            if value < low:
+                return "低"
+            elif value > high:
+                return "高"
+            return "中"
+
+        w_level = _level(euro.w, odds_range.low_w, odds_range.hight_w)
+        d_level = _level(euro.d, odds_range.low_d, odds_range.hight_d)
+        l_level = _level(euro.l, odds_range.low_l, odds_range.hight_l)
+
+        return w_level, d_level, l_level
 
     # @staticmethod
     # def hyr_standard_odds_from_text(markdown_text: str) -> list[HYRStandardOdds]:
@@ -63,43 +103,6 @@ class OddsEngine:
     #         new_list.append(new_odds)
 
     #     return new_list
-
-    @property
-    def euro_odds_list(self) -> List[EuroOdds]:
-        """转化为欧指赔率列表"""
-        return [
-            EuroOdds(h=odds.h, d=odds.d, a=odds.a, return_rate=odds.return_rate)
-            for odds in self.odds_list
-        ]
-
-    @staticmethod
-    def euro_odds_range(
-        odds_list: List[EuroOdds] | List[StandardOdds],
-    ) -> EuroStandardOddsRange:
-        """从 EuroOdds 或 StandardOdds 列表中提取欧指赔率范围"""
-        w_list = [odds.h for odds in odds_list]
-        d_list = [odds.d for odds in odds_list]
-        l_list = [odds.a for odds in odds_list]
-
-        return EuroStandardOddsRange(
-            low_w=min(w_list),
-            hight_w=max(w_list),
-            low_d=min(d_list),
-            hight_d=max(d_list),
-            low_l=min(l_list),
-            hight_l=max(l_list),
-        )
-
-    def filter_standard_odds_from_asia(self, asia: AsiaOdds) -> list[StandardOdds]:
-        """从 HYRStandardOdds 列表中过滤出符合 HYRAsiaOdds 的赔率数据"""
-        result = []
-        for odds in self.standard_odds_list:
-            if odds.water_level != asia.water_level:
-                continue
-            if odds.goal_line != asia.goal_line:
-                continue
-            result.append(odds)
-        return result
 
     # @staticmethod
     # def hyr_euro_odds_from_oh(odds: OHEuroOdds) -> HYREuroOdds:

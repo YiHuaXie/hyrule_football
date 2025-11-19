@@ -1,13 +1,17 @@
-from hyrule_football.services import match_service as _match_service
+from hyrule_football.core import match_service as _match_service
 from langchain.tools import tool
 from hyrule_football.utils import get_logger
+from hyrule_football.models import MatchInfo
+from typing import Optional, List
+from pydantic import BaseModel, Field
+from typing_extensions import Annotated
 
 logger = get_logger(__name__)
 
 
 @tool
 def get_match_list() -> str:
-    """获取所有赛事或热门赛事"""
+    """查询所有比赛（赛事）"""
 
     logger.info(">>> [Tool] get_match_list 被调用")
     matches = _match_service.request_hot_match_list()
@@ -18,12 +22,55 @@ def get_match_list() -> str:
     return "赛事列表：\n".join(match_list)
 
 
-def get_match_for_name(team_name: str) -> str:
-    """"""
-    matches = _match_service.get_match_for_name(team_name)
+class MatchInput(BaseModel):
+    """生成赛事对阵输入模型"""
+
+    team_a: Annotated[str, Field(..., description="球队A")]
+    team_b: Annotated[str, Field(..., description="球队B")]
+
+    @property
+    def match_description(self) -> str:
+        """生成赛事对阵"""
+        return f"{self.team_a} VS {self.team_b}"
+
+
+@tool(parse_docstring=True)
+def get_match_for_matchup(input_value: MatchInput) -> Optional[MatchInfo]:
+    """
+    查询某场比赛的赛事数据
+
+    Args:
+        input_value (MatchInput): 赛事对阵输入,
+        传入 MatchInput，则使用其中的 team_a 与 team_b 生成赛事名称。
+        例如 MatchInput(team_a="阿森纳", team_b="切尔西")，相当于 “阿森纳 VS 切尔西”
+
+    Returns:
+        Optional[MatchInfo]: 匹配到的赛事信息
+    """
+
+    logger.info(f">>> [Tool] get_match_for_matchup 被调用，入参：{input_value}")
+
+    input_value = input_value.match_description
+    matches = _match_service.get_match_for_name(input_value)
     if not matches:
-        return "没有找到相关比赛"
-    if len(matches) > 1:
-        return "找到多场比赛，请指定更具体的名字"
-    if len(matches) == 1:
-        return matches[0].match_description
+        return None
+    return matches[0]
+
+
+@tool(parse_docstring=True)
+def get_match_for_team(team_name: str) -> List[str]:
+    """
+    查询某只球队的赛事信息
+
+    Args:
+        team_name (str): 赛事信息摘要
+        例如“皇马” 或 “拜仁”；
+
+    Returns:
+        List[str]: 匹配到的赛事信息
+    """
+
+    logger.info(f">>> [Tool] get_match_for_team 被调用，入参：{team_name}")
+
+    matches = _match_service.get_match_for_name(team_name)
+    return [m.match_description for m in matches]

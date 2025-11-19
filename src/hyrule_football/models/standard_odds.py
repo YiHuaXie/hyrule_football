@@ -109,6 +109,23 @@ class EuroStandardOddsRange(BaseModel):
     low_l: Annotated[float, Field(..., description="负赔率(Lose) 低位")]
     hight_l: Annotated[float, Field(..., description="负赔率(Lose) 高位")]
 
+    @classmethod
+    def from_standard_odds_list(cls, odds_list: list[StandardOdds]):
+        """从 StandardOdds 列表中提取欧指赔率范围"""
+
+        w_list = [odds.w for odds in odds_list]
+        d_list = [odds.d for odds in odds_list]
+        l_list = [odds.l for odds in odds_list]
+
+        return EuroStandardOddsRange(
+            low_w=min(w_list),
+            hight_w=max(w_list),
+            low_d=min(d_list),
+            hight_d=max(d_list),
+            low_l=min(l_list),
+            hight_l=max(l_list),
+        )
+
     @property
     def range_description(self) -> str:
         """获取范围表述字段"""

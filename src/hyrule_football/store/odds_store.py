@@ -276,7 +276,7 @@ class OddsStore:
 _singleton_store: OddsStore | None = None
 
 
-def odds_store_shared() -> OddsStore:
+def get_odds_store() -> OddsStore:
     global _singleton_store
     if _singleton_store is None:
         _singleton_store = OddsStore()
@@ -284,7 +284,7 @@ def odds_store_shared() -> OddsStore:
 
 
 def _delete_all_odds():
-    store = odds_store_shared()
+    store = get_odds_store()
     pipeline = store.r.pipeline()
     for key in store.r.scan_iter("odds:*"):
         pipeline.delete(key)
@@ -293,7 +293,7 @@ def _delete_all_odds():
 
 def _export_all_odds():
     DATA_ODDS_DIR.mkdir(parents=True, exist_ok=True)
-    store = odds_store_shared()
+    store = get_odds_store()
     for league in _league_list:
         for system_no in range(92, 97):
             system_name = f"{league}{system_no}"

@@ -1,23 +1,9 @@
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from pydantic import BaseModel, Field, field_validator
 from typing_extensions import Annotated
-from .match import MatchInfo
 from hyrule_football.utils import water_level_str, asia_handicap_float
-
-
-class Company(BaseModel):
-    """博彩公司模型"""
-
-    cid: Annotated[int, Field(..., description="博彩公司ID")]
-    name: Annotated[str, Field(..., description="博彩公司名称")]
-
-    @classmethod
-    def bet635(cls):
-        return cls(cid=38, name="bet365")
-
-    @classmethod
-    def williamhill(cls):
-        return cls(cid=26, name="威廉希尔")
+from .match_info import MatchInfo
+from .company import Company
 
 
 class AsiaOdds(BaseModel):
@@ -66,22 +52,32 @@ class OddsSummary(BaseModel):
 
     init_euro: Annotated[
         Optional[EuroOdds],
-        Field(default=None, description="开盘欧指赔率"),
+        Field(default=None, description="初始欧指赔率"),
     ]
 
     init_asia: Annotated[
         Optional[AsiaOdds],
-        Field(default=None, description="开盘亚盘赔率"),
+        Field(default=None, description="初始亚盘赔率"),
+    ]
+
+    init_pattern: Annotated[
+        Optional[str],
+        Field(default=None, description="初始欧指格局, 例如: 低-中-高"),
     ]
 
     now_euro: Annotated[
         Optional[EuroOdds],
-        Field(default=None, description="当前欧指赔率"),
+        Field(default=None, description="即时欧指赔率"),
+    ]
+
+    now_pattern: Annotated[
+        Optional[str],
+        Field(default=None, description="即时欧指格局, 例如: 低-中-高"),
     ]
 
     now_asia: Annotated[
         Optional[AsiaOdds],
-        Field(default=None, description="当前亚盘赔率"),
+        Field(default=None, description="即时亚盘赔率"),
     ]
 
     euro_history: Annotated[
@@ -93,6 +89,23 @@ class OddsSummary(BaseModel):
         List[EuroOdds],
         Field(default_factory=list, description="历史亚盘列表"),
     ]
+
+    # def generate_pattern(self) -> None:
+    #     """生成格局数据"""
+    #     match_league = self.match_info.league
+    #     if self.init_euro and self.init_asia:
+    #         init_system_name = get_odds_system_name(match_league, self.init_euro.return_rate)
+    #         engine = OddsEngine(init_system_name)
+    #         init_pattern = engine.euro_odds_pattern(self.init_euro, self.init_asia)
+    #         if init_pattern:
+    #             self.init_pattern = f"{init_pattern[0],init_pattern[1],init_pattern[2]}"
+
+    #     if self.now_euro and self.now_asia:
+    #         now_system_name = get_odds_system_name(match_league, self.now_euro.return_rate)
+    #         engine = OddsEngine(now_system_name)
+    #         now_pattern = engine.euro_odds_pattern(self.now_euro, self.now_asia)
+    #         if now_pattern:
+    #             self.now_pattern = f"{now_pattern[0],now_pattern[1],now_pattern[2]}"
 
 
 class BasedMatchOddsInfo(BaseModel):

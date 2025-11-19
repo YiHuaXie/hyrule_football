@@ -1,9 +1,10 @@
-from .odds_store import OddsStore, odds_store_shared
+from .odds_store import OddsStore, get_odds_store
 from .lark_store import LarkUserStore
-from .match_store import HotMatchStore
+from .match_store import HotMatchStore, get_match_store
 
 __all__ = [
-    "odds_store_shared",
+    "get_odds_store",
+    "get_match_store",
     "OddsStore",
     "LarkUserStore",
     "HotMatchStore",

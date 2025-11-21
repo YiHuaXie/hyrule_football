@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple
+from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator
 from typing_extensions import Annotated
 from hyrule_football.utils import water_level_str, asia_handicap_float
@@ -39,12 +39,51 @@ class EuroOdds(BaseModel):
 
     @property
     def opposite_odds(self):
-        # 生成对立面的欧指
+        """生成对立面的欧指"""
         return EuroOdds(w=self.l, d=self.d, l=self.w, return_rate=self.return_rate)
+
+    @property
+    def euro_system_no(self) -> int:
+        """获取欧指体系编号"""
+        # 每个区间宽度：1，offset 0.8 让区间精准对应
+        # 起始区间：88.2 对应体系 89
+        # 所以 (88.2 + 0.8 → 89), (89.19 + 0.8 → 89),
+        # (89.2 + 0.8 → 90), (90.19 + 0.8 → 90),...
+        system_no = int(self.return_rate + 0.8)
+        return system_no
+
+    @property
+    def euro_odds_under_94(self):
+        """将当前欧指转换为94体系下的欧指"""
+
+        # 1. 计算原始概率
+        original_return_rate = self.euro_system_no / 100.0
+        p_w = original_return_rate / self.w
+        p_d = original_return_rate / self.d
+        p_l = original_return_rate / self.l
+
+        # 2. 概率归一化
+        total = p_w + p_d + p_l
+        p_w_norm = p_w / total
+        p_d_norm = p_d / total
+        p_l_norm = p_l / total
+
+        # 3. 根据当前反推新赔率
+        new_return_rate = 0.94
+        n_w = new_return_rate / p_w_norm
+        n_d = new_return_rate / p_d_norm
+        n_l = new_return_rate / p_l_norm
+
+        return EuroOdds(
+            w=round(n_w, 2),
+            d=round(n_d, 2),
+            l=round(n_l, 2),
+            return_rate=94.0,
+        )
 
 
 class OddsSummary(BaseModel):
-    """生成「指定的博彩公司针对某支球队给出的欧指和亚盘赔率汇总模型」"""
+    """生成「赔率汇总模型」"""
 
     company: Annotated[Company, Field(..., description="博彩公司")]
 
@@ -60,19 +99,9 @@ class OddsSummary(BaseModel):
         Field(default=None, description="初始亚盘赔率"),
     ]
 
-    init_pattern: Annotated[
-        Optional[str],
-        Field(default=None, description="初始欧指格局, 例如: 低-中-高"),
-    ]
-
     now_euro: Annotated[
         Optional[EuroOdds],
         Field(default=None, description="即时欧指赔率"),
-    ]
-
-    now_pattern: Annotated[
-        Optional[str],
-        Field(default=None, description="即时欧指格局, 例如: 低-中-高"),
     ]
 
     now_asia: Annotated[
@@ -86,47 +115,52 @@ class OddsSummary(BaseModel):
     ]
 
     asia_history: Annotated[
-        List[EuroOdds],
+        List[AsiaOdds],
         Field(default_factory=list, description="历史亚盘列表"),
     ]
 
-    # def generate_pattern(self) -> None:
-    #     """生成格局数据"""
-    #     match_league = self.match_info.league
-    #     if self.init_euro and self.init_asia:
-    #         init_system_name = get_odds_system_name(match_league, self.init_euro.return_rate)
-    #         engine = OddsEngine(init_system_name)
-    #         init_pattern = engine.euro_odds_pattern(self.init_euro, self.init_asia)
-    #         if init_pattern:
-    #             self.init_pattern = f"{init_pattern[0],init_pattern[1],init_pattern[2]}"
 
-    #     if self.now_euro and self.now_asia:
-    #         now_system_name = get_odds_system_name(match_league, self.now_euro.return_rate)
-    #         engine = OddsEngine(now_system_name)
-    #         now_pattern = engine.euro_odds_pattern(self.now_euro, self.now_asia)
-    #         if now_pattern:
-    #             self.now_pattern = f"{now_pattern[0],now_pattern[1],now_pattern[2]}"
+class OddsPattern(BaseModel):
+    """生成「欧指格局模型」"""
+
+    company: Annotated[Company, Field(..., description="博彩公司")]
+
+    init_team_name: Annotated[Optional[str], Field(default=None, description="初始让球方")]
+
+    now_team_name: Annotated[Optional[str], Field(default=None, description="即时让球方")]
+
+    init_pattern: Annotated[
+        Optional[str],
+        Field(default=None, description="初始欧指格局，例如: 低-中-高"),
+    ]
+
+    now_pattern: Annotated[
+        Optional[str],
+        Field(default=None, description="即时欧指格局，例如: 低-中-高"),
+    ]
 
 
 class BasedMatchOddsInfo(BaseModel):
     """生成「某场比赛相关博彩公司的欧指和亚盘赔率信息模型」"""
 
-    match_info: Annotated[
-        MatchInfo,
-        Field(..., description="赛事信息"),
-    ]
+    match_info: Annotated[MatchInfo, Field(..., description="赛事信息")]
 
     company_list: Annotated[
         List[Company],
         Field(default_factory=list, description="博彩公司列表"),
     ]
 
+    odds_pattern_list: Annotated[
+        List[OddsPattern],
+        Field(default_factory=list, description="「欧指格局模型」列表"),
+    ]
+
     home_summary_list: Annotated[
         List[OddsSummary],
-        Field(default_factory=list, description="主队赔率汇总列表"),
+        Field(default_factory=list, description="主队「赔率汇总模型」列表"),
     ]
 
     away_summary_list: Annotated[
         List[OddsSummary],
-        Field(default_factory=list, description="客队赔率汇总列表"),
+        Field(default_factory=list, description="客队「赔率汇总模型」列表"),
     ]

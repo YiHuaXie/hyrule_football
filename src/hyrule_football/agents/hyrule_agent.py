@@ -48,6 +48,7 @@ class HyruleAgent:
             plan_match_odds_query,
         ]
         self.prompt = HyrulePrompt().prompt_structure()
+        print(self.prompt)
         # 创建 Agent（单智能体）
         self.agent = create_agent(
             model=self.llm,

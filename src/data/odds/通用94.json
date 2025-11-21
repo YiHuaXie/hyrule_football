@@ -1,0 +1,802 @@
+[
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 1.36,
+    "d": 4.5,
+    "l": 9.0,
+    "return_rate": 93.58,
+    "goal_line": -1.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 1.38,
+    "d": 4.4,
+    "l": 8.5,
+    "return_rate": 93.5,
+    "goal_line": -1.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 1.4,
+    "d": 4.33,
+    "l": 8.0,
+    "return_rate": 93.44,
+    "goal_line": -1.25,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 1.42,
+    "d": 4.2,
+    "l": 8.0,
+    "return_rate": 93.69,
+    "goal_line": -1.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 1.44,
+    "d": 4.2,
+    "l": 7.5,
+    "return_rate": 93.82,
+    "goal_line": -1.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 1.47,
+    "d": 4.2,
+    "l": 6.5,
+    "return_rate": 93.26,
+    "goal_line": -1.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 1.5,
+    "d": 4.0,
+    "l": 6.5,
+    "return_rate": 93.33,
+    "goal_line": -1.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 1.52,
+    "d": 4.0,
+    "l": 6.25,
+    "return_rate": 93.64,
+    "goal_line": -1.0,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 1.53,
+    "d": 4.0,
+    "l": 6.0,
+    "return_rate": 93.43,
+    "goal_line": -1.0,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 1.55,
+    "d": 4.0,
+    "l": 5.8,
+    "return_rate": 93.67,
+    "goal_line": -1.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 1.57,
+    "d": 4.0,
+    "l": 5.5,
+    "return_rate": 93.82,
+    "goal_line": -1.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 1.6,
+    "d": 3.9,
+    "l": 5.5,
+    "return_rate": 94.05,
+    "goal_line": -1.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.61,
+    "d": 3.9,
+    "l": 5.25,
+    "return_rate": 93.63,
+    "goal_line": -0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.63,
+    "d": 3.8,
+    "l": 5.25,
+    "return_rate": 93.71,
+    "goal_line": -0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.65,
+    "d": 3.8,
+    "l": 5.0,
+    "return_rate": 93.53,
+    "goal_line": -0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.67,
+    "d": 3.75,
+    "l": 4.9,
+    "return_rate": 93.5,
+    "goal_line": -0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.7,
+    "d": 3.75,
+    "l": 4.75,
+    "return_rate": 93.86,
+    "goal_line": -0.75,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.73,
+    "d": 3.75,
+    "l": 4.5,
+    "return_rate": 93.73,
+    "goal_line": -0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.75,
+    "d": 3.6,
+    "l": 4.5,
+    "return_rate": 93.33,
+    "goal_line": -0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.78,
+    "d": 3.6,
+    "l": 4.4,
+    "return_rate": 93.73,
+    "goal_line": -0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 1.8,
+    "d": 3.6,
+    "l": 4.33,
+    "return_rate": 93.96,
+    "goal_line": -0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 1.83,
+    "d": 3.6,
+    "l": 4.2,
+    "return_rate": 94.13,
+    "goal_line": -0.5,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 1.85,
+    "d": 3.6,
+    "l": 4.0,
+    "return_rate": 93.61,
+    "goal_line": -0.5,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 1.88,
+    "d": 3.5,
+    "l": 4.0,
+    "return_rate": 93.67,
+    "goal_line": -0.5,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 1.91,
+    "d": 3.5,
+    "l": 3.9,
+    "return_rate": 93.84,
+    "goal_line": -0.5,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 1.95,
+    "d": 3.5,
+    "l": 3.75,
+    "return_rate": 93.88,
+    "goal_line": -0.5,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 2.0,
+    "d": 3.4,
+    "l": 3.6,
+    "return_rate": 93.29,
+    "goal_line": -0.5,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 2.05,
+    "d": 3.4,
+    "l": 3.5,
+    "return_rate": 93.66,
+    "goal_line": -0.5,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.1,
+    "d": 3.4,
+    "l": 3.4,
+    "return_rate": 93.95,
+    "goal_line": -0.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.15,
+    "d": 3.4,
+    "l": 3.2,
+    "return_rate": 93.31,
+    "goal_line": -0.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.2,
+    "d": 3.3,
+    "l": 3.2,
+    "return_rate": 93.45,
+    "goal_line": -0.25,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.25,
+    "d": 3.3,
+    "l": 3.1,
+    "return_rate": 93.45,
+    "goal_line": -0.25,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.3,
+    "d": 3.3,
+    "l": 3.0,
+    "return_rate": 93.36,
+    "goal_line": -0.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.35,
+    "d": 3.3,
+    "l": 2.9,
+    "return_rate": 94.16,
+    "goal_line": -0.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.37,
+    "d": 3.3,
+    "l": 2.9,
+    "return_rate": 93.48,
+    "goal_line": -0.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.4,
+    "d": 3.3,
+    "l": 2.87,
+    "return_rate": 93.62,
+    "goal_line": -0.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "1",
+    "w": 2.45,
+    "d": 3.3,
+    "l": 2.8,
+    "return_rate": 93.6,
+    "goal_line": 0.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "1",
+    "w": 2.5,
+    "d": 3.3,
+    "l": 2.75,
+    "return_rate": 93.75,
+    "goal_line": 0.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "1",
+    "w": 2.55,
+    "d": 3.3,
+    "l": 2.7,
+    "return_rate": 93.85,
+    "goal_line": 0.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "0",
+    "w": 2.6,
+    "d": 3.3,
+    "l": 2.62,
+    "return_rate": 93.52,
+    "goal_line": 0.0,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "0",
+    "w": 2.62,
+    "d": 3.3,
+    "l": 2.6,
+    "return_rate": 93.52,
+    "goal_line": 0.0,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "1",
+    "w": 2.7,
+    "d": 3.3,
+    "l": 2.55,
+    "return_rate": 93.85,
+    "goal_line": 0.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "1",
+    "w": 2.75,
+    "d": 3.3,
+    "l": 2.5,
+    "return_rate": 93.75,
+    "goal_line": 0.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "1",
+    "w": 2.8,
+    "d": 3.3,
+    "l": 2.45,
+    "return_rate": 93.6,
+    "goal_line": 0.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.87,
+    "d": 3.3,
+    "l": 2.4,
+    "return_rate": 93.62,
+    "goal_line": 0.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.9,
+    "d": 3.3,
+    "l": 2.35,
+    "return_rate": 94.16,
+    "goal_line": 0.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 2.9,
+    "d": 3.3,
+    "l": 2.37,
+    "return_rate": 93.48,
+    "goal_line": 0.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 3.0,
+    "d": 3.3,
+    "l": 2.3,
+    "return_rate": 93.36,
+    "goal_line": 0.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 3.1,
+    "d": 3.3,
+    "l": 2.25,
+    "return_rate": 93.45,
+    "goal_line": 0.25,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 3.2,
+    "d": 3.3,
+    "l": 2.2,
+    "return_rate": 93.45,
+    "goal_line": 0.25,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 3.2,
+    "d": 3.4,
+    "l": 2.15,
+    "return_rate": 93.31,
+    "goal_line": 0.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "2",
+    "w": 3.4,
+    "d": 3.4,
+    "l": 2.1,
+    "return_rate": 93.95,
+    "goal_line": 0.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 3.5,
+    "d": 3.4,
+    "l": 2.05,
+    "return_rate": 93.66,
+    "goal_line": 0.5,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 3.6,
+    "d": 3.4,
+    "l": 2.0,
+    "return_rate": 93.29,
+    "goal_line": 0.5,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 3.75,
+    "d": 3.5,
+    "l": 1.95,
+    "return_rate": 93.88,
+    "goal_line": 0.5,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 3.9,
+    "d": 3.5,
+    "l": 1.91,
+    "return_rate": 93.84,
+    "goal_line": 0.5,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 4.0,
+    "d": 3.5,
+    "l": 1.88,
+    "return_rate": 93.67,
+    "goal_line": 0.5,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 4.0,
+    "d": 3.6,
+    "l": 1.85,
+    "return_rate": 93.61,
+    "goal_line": 0.5,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "3",
+    "w": 4.2,
+    "d": 3.6,
+    "l": 1.83,
+    "return_rate": 94.13,
+    "goal_line": 0.5,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 4.33,
+    "d": 3.6,
+    "l": 1.8,
+    "return_rate": 93.96,
+    "goal_line": 0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 4.4,
+    "d": 3.6,
+    "l": 1.78,
+    "return_rate": 93.73,
+    "goal_line": 0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 4.5,
+    "d": 3.6,
+    "l": 1.75,
+    "return_rate": 93.33,
+    "goal_line": 0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 4.5,
+    "d": 3.75,
+    "l": 1.73,
+    "return_rate": 93.73,
+    "goal_line": 0.75,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 4.75,
+    "d": 3.75,
+    "l": 1.7,
+    "return_rate": 93.86,
+    "goal_line": 0.75,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 4.9,
+    "d": 3.75,
+    "l": 1.67,
+    "return_rate": 93.5,
+    "goal_line": 0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 5.0,
+    "d": 3.8,
+    "l": 1.65,
+    "return_rate": 93.53,
+    "goal_line": 0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 5.25,
+    "d": 3.8,
+    "l": 1.63,
+    "return_rate": 93.71,
+    "goal_line": 0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "4",
+    "w": 5.25,
+    "d": 3.9,
+    "l": 1.61,
+    "return_rate": 93.63,
+    "goal_line": 0.75,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 5.5,
+    "d": 3.9,
+    "l": 1.6,
+    "return_rate": 94.05,
+    "goal_line": 1.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 5.5,
+    "d": 4.0,
+    "l": 1.57,
+    "return_rate": 93.82,
+    "goal_line": 1.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 5.8,
+    "d": 4.0,
+    "l": 1.55,
+    "return_rate": 93.67,
+    "goal_line": 1.0,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 6.0,
+    "d": 4.0,
+    "l": 1.53,
+    "return_rate": 93.43,
+    "goal_line": 1.0,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 6.25,
+    "d": 4.0,
+    "l": 1.52,
+    "return_rate": 93.64,
+    "goal_line": 1.0,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 6.5,
+    "d": 4.0,
+    "l": 1.5,
+    "return_rate": 93.33,
+    "goal_line": 1.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "5",
+    "w": 6.5,
+    "d": 4.2,
+    "l": 1.47,
+    "return_rate": 93.26,
+    "goal_line": 1.0,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 7.5,
+    "d": 4.2,
+    "l": 1.44,
+    "return_rate": 93.82,
+    "goal_line": 1.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 8.0,
+    "d": 4.2,
+    "l": 1.42,
+    "return_rate": 93.69,
+    "goal_line": 1.25,
+    "water_level": "低"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 8.0,
+    "d": 4.33,
+    "l": 1.4,
+    "return_rate": 93.44,
+    "goal_line": 1.25,
+    "water_level": "中"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 8.5,
+    "d": 4.4,
+    "l": 1.38,
+    "return_rate": 93.5,
+    "goal_line": 1.25,
+    "water_level": "高"
+  },
+  {
+    "system": "通用94",
+    "interval": "6",
+    "w": 9.0,
+    "d": 4.5,
+    "l": 1.36,
+    "return_rate": 93.58,
+    "goal_line": 1.25,
+    "water_level": "高"
+  }
+]

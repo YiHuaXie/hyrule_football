@@ -6,12 +6,13 @@ from hyrule_football.models import (
     Company,
     EuroOdds,
     AsiaOdds,
+    OddsPattern,
 )
 from hyrule_football.clients import HTTPClient
-from hyrule_football.utils import get_logger, get_odds_system_name
+from hyrule_football.utils import get_logger
 from hyrule_football.core.odds_engine import OddsEngine
 
-from typing import List
+from typing import List, Optional, Tuple
 import os
 
 logger = get_logger(__name__)
@@ -33,6 +34,22 @@ client = HTTPClient(
 )
 
 
+def _request_odds_data(
+    match_id: str, need_history: bool
+) -> Optional[Tuple[List[dict], List[dict]]]:
+    try:
+        params = {"channel": "web", "os": "browser", "matchId": match_id}
+        euro_res = client.post(path="/web/euroOdds", json=params)
+        euro_odds_list = euro_res["data"]["oddsList"]
+        asia_res = client.post(path="/web/asiaOdds", json=params)
+        asia_odds_list = asia_res["data"]["oddsList"]
+
+        return euro_odds_list, asia_odds_list
+    except Exception as e:
+        logger.error(f"❌ 获取欧赔数据失败：{e}")
+        return None
+
+
 def get_odds_for_match(
     match_info: MatchInfo,
     company_list: List[Company] = [Company.bet635(), Company.williamhill()],
@@ -40,71 +57,73 @@ def get_odds_for_match(
 ) -> BasedMatchOddsInfo:
     """获取某场比赛的赔率数据"""
 
-    try:
-        params = {"channel": "web", "os": "browser", "matchId": match_info.match_id}
-        euro_res = client.post(path="/web/euroOdds", json=params)
-        euro_odds_list = euro_res["data"]["oddsList"]
-        asia_res = client.post(path="/web/asiaOdds", json=params)
-        asia_odds_list = asia_res["data"]["oddsList"]
+    odds_data = _request_odds_data(match_info.match_id, need_history)
 
-    except Exception as e:
-        logger.error(f"❌ 获取欧赔数据失败：{e}")
+    if not odds_data:
         return BasedMatchOddsInfo(match_info=match_info)
+
+    euro_odds_list, asia_odds_list = odds_data
 
     if not euro_odds_list and not asia_odds_list:
         return BasedMatchOddsInfo(match_info=match_info)
 
-    odds_info = BasedMatchOddsInfo(
-        match_info=match_info,
-        company_list=company_list,
-    )
+    odds_info = BasedMatchOddsInfo(match_info=match_info, company_list=company_list)
 
     for company in company_list:
+        euro_data = _gen_euro_odds(company.cid, euro_odds_list)
+        asia_data = _gen_asia_odds(company.cid, asia_odds_list)
+
         home_odds_summary = OddsSummary(company=company, team_name=match_info.home)
+        home_odds_summary.init_asia = asia_data.get("home_init_asia")
+        home_odds_summary.now_asia = asia_data.get("home_now_asia")
+        home_odds_summary.init_euro = euro_data.get("home_init_euro")
+        home_odds_summary.now_euro = euro_data.get("home_now_euro")
+
         away_odds_summary = OddsSummary(company=company, team_name=match_info.away)
+        away_odds_summary.init_asia = asia_data.get("away_init_asia")
+        away_odds_summary.now_asia = asia_data.get("away_now_asia")
+        away_odds_summary.init_euro = euro_data.get("away_init_euro")
+        away_odds_summary.now_euro = euro_data.get("away_now_euro")
 
-        # 生成欧指数据
-        _gen_euro_odds(company.cid, euro_odds_list, home_odds_summary, away_odds_summary)
-        # 生成亚盘数据
-        _gen_asia_odds(company.cid, asia_odds_list, home_odds_summary, away_odds_summary)
-
-        _gen_pattern(home_odds_summary, match_info.league)
-        _gen_pattern(away_odds_summary, match_info.league)
-
+        odds_pattern = _gen_pattern(
+            company, match_info.league, home_odds_summary, away_odds_summary
+        )
+        odds_info.odds_pattern_list.append(odds_pattern)
         odds_info.home_summary_list.append(home_odds_summary)
         odds_info.away_summary_list.append(away_odds_summary)
 
     return odds_info
 
 
-def _gen_pattern(summary: OddsSummary, match_league: str) -> None:
+def _gen_pattern(
+    company: Company,
+    match_league: str,
+    home_summary: OddsSummary,
+    away_summary: OddsSummary,
+) -> OddsPattern:
     """生成格局数据"""
-    if summary.init_euro and summary.init_asia:
-        init_euro = summary.init_euro
-        init_system_name = get_odds_system_name(match_league, init_euro.return_rate)
-        engine = OddsEngine(init_system_name)
-        init_pattern = engine.euro_odds_pattern(summary.init_euro, summary.init_asia)
-        if init_pattern:
-            summary.init_pattern = f"{init_pattern[0]}-{init_pattern[1]}-{init_pattern[2]}"
 
-    if summary.now_euro and summary.now_asia:
-        now_euro = summary.now_euro
-        now_system_name = get_odds_system_name(match_league, now_euro.return_rate)
-        engine = OddsEngine(now_system_name)
-        now_pattern = engine.euro_odds_pattern(summary.now_euro, summary.now_asia)
-        if now_pattern:
-            summary.init_pattern = f"{init_pattern[0]}-{init_pattern[1]}-{init_pattern[2]}"
+    odds_pattern = OddsPattern(company=company)
+    # 初始让球方的赔率汇总
+    odds_summary = home_summary if home_summary.init_asia.goal_line <= 0.0 else away_summary
+    odds_pattern.init_team_name = odds_summary.team_name
+    odds_pattern.init_pattern = OddsEngine.gen_pattern_str(
+        odds_summary.init_euro, odds_summary.init_asia, match_league
+    )
+    # 即时让球方的赔率汇总
+    odds_summary = home_summary if home_summary.now_asia.goal_line <= 0.0 else away_summary
+    odds_pattern.now_team_name = odds_summary.team_name
+    odds_pattern.now_pattern = OddsEngine.gen_pattern_str(
+        odds_summary.now_euro, odds_summary.now_asia, match_league
+    )
+
+    return odds_pattern
 
 
-def _gen_euro_odds(
-    cid: str,
-    euro_odds_list: list,
-    home_odds_summary: OddsSummary,
-    away_odds_summary: OddsSummary,
-) -> None:
+def _gen_euro_odds(cid: str, euro_odds_list: list) -> dict:
     odds = next((o for o in euro_odds_list if cid == o["cid"]), None)
     if not odds:
-        return
+        return {}
 
     home_init_euro = EuroOdds(
         w=odds["initOddsWin"],
@@ -118,37 +137,34 @@ def _gen_euro_odds(
         l=odds["nowOddsLose"],
         return_rate=odds["nowReturnRates"],
     )
-    home_odds_summary.init_euro = home_init_euro
-    home_odds_summary.now_euro = home_now_euro
 
     away_init_euro = home_init_euro.opposite_odds
     away_now_euro = home_now_euro.opposite_odds
-    away_odds_summary.init_euro = away_init_euro
-    away_odds_summary.now_euro = away_now_euro
+
+    return {
+        "home_init_euro": home_init_euro,
+        "home_now_euro": home_now_euro,
+        "away_init_euro": away_init_euro,
+        "away_now_euro": away_now_euro,
+    }
 
 
-def _gen_asia_odds(
-    cid: str,
-    asia_odds_list: list,
-    home_odds_summary: OddsSummary,
-    away_odds_summary: OddsSummary,
-) -> None:
+def _gen_asia_odds(cid: str, asia_odds_list: list) -> dict:
     odds = next((o for o in asia_odds_list if cid == o["cid"]), None)
     if not odds:
-        return
+        return {}
 
     home_init_asia = AsiaOdds(
         goal_line=odds["initBet"],
         water_level=odds["initOddsUp"],
         return_rate=odds["initReturnRates"],
     )
+
     home_now_asia = AsiaOdds(
         goal_line=odds["nowBet"],
         water_level=odds["nowOddsUp"],
         return_rate=odds["nowReturnRates"],
     )
-    home_odds_summary.init_asia = home_init_asia
-    home_odds_summary.now_asia = home_now_asia
 
     goal_line = home_init_asia.goal_line * -1
     goal_line = 0.0 if goal_line == 0.0 else goal_line
@@ -166,5 +182,9 @@ def _gen_asia_odds(
         return_rate=odds["nowReturnRates"],
     )
 
-    away_odds_summary.init_asia = away_init_asia
-    away_odds_summary.now_asia = away_now_asia
+    return {
+        "home_init_asia": home_init_asia,
+        "home_now_asia": home_now_asia,
+        "away_init_asia": away_init_asia,
+        "away_now_asia": away_now_asia,
+    }

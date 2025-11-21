@@ -1,5 +1,5 @@
 from .match_info import MatchInfo
-from .odds_info import BasedMatchOddsInfo, OddsSummary, EuroOdds, AsiaOdds
+from .odds_info import BasedMatchOddsInfo, OddsSummary, EuroOdds, AsiaOdds, OddsPattern
 from .standard_odds import StandardOdds, EuroStandardOddsRange
 from .company import Company, get_company_by_name
 
@@ -11,6 +11,7 @@ __all__ = [
     "OddsSummary",
     "EuroOdds",
     "AsiaOdds",
+    "OddsPattern",
     "StandardOdds",
     "EuroStandardOddsRange",
 ]

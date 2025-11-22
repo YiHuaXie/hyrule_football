@@ -7,7 +7,7 @@ import redis
 from hyrule_football.models import MatchInfo
 
 
-class HotMatchStore:
+class MatchStore:
     """MatchInfo 的 Redis 缓存，提供简单的 CRUD 接口
 
     存储结构：
@@ -68,11 +68,11 @@ class HotMatchStore:
         self.r.delete(self.KEY)
 
 
-_singleton_store: HotMatchStore | None = None
+_singleton_store: MatchStore | None = None
 
 
-def get_match_store() -> HotMatchStore:
+def get_match_store() -> MatchStore:
     global _singleton_store
     if _singleton_store is None:
-        _singleton_store = HotMatchStore()
+        _singleton_store = MatchStore()
     return _singleton_store

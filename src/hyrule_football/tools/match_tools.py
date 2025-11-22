@@ -5,21 +5,28 @@ from hyrule_football.models import MatchInfo
 from typing import Optional, List
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
+from hyrule_football.store import get_match_store
 
 logger = get_logger(__name__)
 
 
 @tool
-def get_match_list() -> str:
+def update_match_list() -> List[str]:
+    """更新赛事列表"""
+    logger.info(">>> [Tool] update_match_list 被调用")
+    matches = _match_service.request_all_match_list()
+    match_list = [m.match_description for m in matches]
+    return match_list
+
+
+@tool
+def get_match_list() -> List[str]:
     """查询所有比赛（赛事）"""
 
     logger.info(">>> [Tool] get_match_list 被调用")
-    matches = _match_service.request_hot_match_list()
+    matches = get_match_store().list_matches()
     match_list = [m.match_description for m in matches]
-    if not match_list:
-        return "当前没有找到赛事列表，请稍后再试"
-
-    return "赛事列表：\n".join(match_list)
+    return match_list
 
 
 class MatchInput(BaseModel):
@@ -29,7 +36,7 @@ class MatchInput(BaseModel):
     team_b: Annotated[str, Field(..., description="球队B")]
 
     @property
-    def match_description(self) -> str:
+    def matchup_str(self) -> str:
         """生成赛事对阵"""
         return f"{self.team_a} VS {self.team_b}"
 
@@ -50,7 +57,7 @@ def get_match_for_matchup(input_value: MatchInput) -> Optional[MatchInfo]:
 
     logger.info(f">>> [Tool] get_match_for_matchup 被调用，入参：{input_value}")
 
-    input_value = input_value.match_description
+    input_value = input_value.matchup_str
     matches = _match_service.get_match_for_name(input_value)
     if not matches:
         return None

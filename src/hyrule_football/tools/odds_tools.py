@@ -26,8 +26,14 @@ class MatchOddsInput(MatchInput):
 class MatchOddsPlan(BaseModel):
     """已经解析好的赔率查询计划"""
 
-    fix_match: Annotated[MatchInfo, Field(..., description="已经确认的比赛信息")]
-    company_list: Annotated[List[Company], Field(..., description="需要查询的博彩公司名称列表")]
+    fix_match: Annotated[
+        MatchInfo,
+        Field(..., description="已经确认的比赛信息"),
+    ]
+    company_list: Annotated[
+        List[Company],
+        Field(..., description="需要查询的博彩公司名称列表"),
+    ]
 
 
 @tool(parse_docstring=True)
@@ -44,17 +50,20 @@ def plan_match_odds_query(match_input: MatchOddsInput) -> Optional[MatchOddsPlan
 
     logger.info(">>> [Tool] plan_match_odds_query 被调用")
 
-    match_list = get_match_for_name(match_input.match_description)
+    match_list = get_match_for_name(match_input.matchup_str)
     if not match_list:
         return None
 
     match_info = match_list[0]
 
-    print(match_info.model_dump())
+    company_list = [
+        company
+        for company in (get_company_by_name(name) for name in match_input.company_list)
+        if company is not None
+    ]
 
-    company_list = match_input.company_list
-    company_list = [get_company_by_name(name) for name in company_list]
-    print(company_list)
+    if not company_list:
+        return None
 
     return MatchOddsPlan(
         fix_match=match_info,
@@ -76,36 +85,3 @@ def get_odds_info_for_match(plan: MatchOddsPlan) -> Optional[BasedMatchOddsInfo]
     logger.info(">>> [Tool] get_odds_info_for_match 被调用")
     odds_info = get_odds_for_match(plan.fix_match, plan.company_list)
     return odds_info
-
-
-# @tool(parse_docstring=True)
-# def get_odds_info_for_match(match_input: MatchOddsInput) -> Optional[BasedMatchOddsInfo]:
-#     """
-#     获取某场比赛的赔率信息
-
-#     Args:
-#         match_input (MatchOddsInput): MatchOddsInput 模型对象，包含以下字段：
-#             - team_a：球队A
-#             - team_b：球队B
-#             - company_list：需要查询的博彩公司列表
-#             例如 MatchOddsInput(team_a="阿森纳", team_b="切尔西") 或者
-#             MatchOddsInput(team_a="阿森纳", team_b="切尔西", company_list=["365", "威廉"])
-
-#     Returns:
-#         Optional[BasedMatchOddsInfo]: 某场比赛的赔率信息
-#     """
-
-#     logger.info(">>> [Tool] get_odds_info_for_match 被调用")
-#     match_list = _match_service.get_match_for_name(match_input.match_description)
-#     if not match_list:
-#         return None
-
-#     match_info = match_list[0]
-#     print(match_info.model_dump())
-
-#     company_list = match_input.company_list
-#     company_list = [get_company_by_name(name) for name in company_list]
-#     print(company_list)
-
-#     return None
-#     # company_list = [get_company_by_name(name) for name in match_input.company_list]

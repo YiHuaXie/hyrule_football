@@ -8,61 +8,21 @@ from hyrule_football.models import (
     AsiaOdds,
     OddsPattern,
 )
-from hyrule_football.clients import HTTPClient
+
 from hyrule_football.utils import get_logger
 from hyrule_football.core.odds_engine import OddsEngine
+from .api_service import request_euro_odds_data, request_asia_odds_data
 
-from typing import List, Optional, Tuple
-import os
+from typing import List
 
 logger = get_logger(__name__)
 
-default_headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
-    "Accept": "application/json",
-    "Accept-Encoding": "gzip, deflate",
-    "Content-Type": "application/json",
-    "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-    "Origin": os.getenv("OUHE_HTML_URL"),
-    "Host": os.getenv("OUHE_API_HOST"),
-}
 
-client = HTTPClient(
-    base_url=os.getenv("OUHE_API_URL"),
-    timeout=10,
-    headers=default_headers,
-)
-
-
-def _request_odds_data(
-    match_id: str, need_history: bool
-) -> Optional[Tuple[List[dict], List[dict]]]:
-    try:
-        params = {"channel": "web", "os": "browser", "matchId": match_id}
-        euro_res = client.post(path="/web/euroOdds", json=params)
-        euro_odds_list = euro_res["data"]["oddsList"]
-        asia_res = client.post(path="/web/asiaOdds", json=params)
-        asia_odds_list = asia_res["data"]["oddsList"]
-
-        return euro_odds_list, asia_odds_list
-    except Exception as e:
-        logger.error(f"❌ 获取欧赔数据失败：{e}")
-        return None
-
-
-def get_odds_for_match(
-    match_info: MatchInfo,
-    company_list: List[Company] = [Company.bet635(), Company.williamhill()],
-    need_history: bool = False,
-) -> BasedMatchOddsInfo:
+def get_odds_for_match(match_info: MatchInfo, company_list: List[Company]) -> BasedMatchOddsInfo:
     """获取某场比赛的赔率数据"""
 
-    odds_data = _request_odds_data(match_info.match_id, need_history)
-
-    if not odds_data:
-        return BasedMatchOddsInfo(match_info=match_info)
-
-    euro_odds_list, asia_odds_list = odds_data
+    euro_odds_list = request_euro_odds_data(match_info.match_id)
+    asia_odds_list = request_asia_odds_data(match_info.match_id)
 
     if not euro_odds_list and not asia_odds_list:
         return BasedMatchOddsInfo(match_info=match_info)

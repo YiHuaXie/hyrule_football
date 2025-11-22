@@ -1,12 +1,10 @@
-import requests
-from bs4 import BeautifulSoup
-import json
 from typing import List
-import os
-
 from hyrule_football.models import MatchInfo
 from hyrule_football.store import get_match_store
 from hyrule_football.utils import get_logger
+
+from .api_service import request_hot_match_list as _request_hot_match_list
+from .api_service import request_all_match_list as _request_all_match_list
 
 logger = get_logger(__name__)
 
@@ -22,7 +20,7 @@ def get_match_for_name(match_name: str) -> List[MatchInfo]:
 
     matches = get_match_store().list_matches()
     if not matches:
-        matches = request_hot_match_list()
+        matches = request_all_match_list()
 
     match_list = []
     for a_match in matches:
@@ -36,23 +34,13 @@ def get_match_for_name(match_name: str) -> List[MatchInfo]:
 
 
 def request_hot_match_list() -> List[MatchInfo]:
-    try:
-        url = os.getenv("OUHE_HTML_URL")
-        response = requests.get(url, proxies={"http": None}, timeout=5)
-        html = response.text
-        soup = BeautifulSoup(html, "html.parser")
+    return [MatchInfo(**m) for m in _request_hot_match_list()]
 
-        script_tag = soup.find("script", id="__NEXT_DATA__", type="application/json")
-        json_object = json.loads(script_tag.get_text())
-        match_list = json_object["props"]["pageProps"]["data"]["hotMatchList"]
 
-        matches = [MatchInfo(**m) for m in match_list]
-
-        store = get_match_store()
-        store.clear_all()
-        store.save_matches(matches)
-
-        return matches
-    except requests.exceptions.Timeout:
-        logger.error("❌ 请求超时")
-        return []
+def request_all_match_list():
+    match_list = _request_all_match_list()
+    matches = [MatchInfo(**m) for m in match_list]
+    store = get_match_store()
+    store.clear_all()
+    store.save_matches(matches)
+    return matches

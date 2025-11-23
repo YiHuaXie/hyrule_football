@@ -11,7 +11,13 @@ logger = get_logger(__name__)
 class ChatMemory:
     """会话记忆系统"""
 
-    def __init__(self):
+    def __init__(
+        self,
+        memory_ttl: int = 300,
+        summarize_threshold: int = 40,
+    ):
+        self.summarize_threshold = summarize_threshold
+        self.memory_ttl = memory_ttl
         self.llm = ChatDeepSeek(
             model=os.environ.get("DEEPSEEK_CHAT"),
             api_key=os.environ.get("DEEPSEEK_API_KEY"),
@@ -37,14 +43,16 @@ class ChatMemory:
     #  加载长期记忆（Redis）并自动摘要
     # -------------------------------------------------------------------------
     def get_history(self, session_id: str) -> RedisChatMessageHistory:
-        """加载 Redis 中的历史消息，如果超过 40 条对话，则自动摘要"""
+        """加载 Redis 中的历史消息，如果超过 summarize_threshold 条对话，则自动摘要"""
 
         history = RedisChatMessageHistory(
             url=self.redis_url,
             session_id=session_id,
+            # 节约token，设置一个记忆时间，超过记忆时间后若Redis没有写入新数据，意味着会话结束了
+            ttl=self.memory_ttl,
         )
 
-        if len(history.messages) > 40:
+        if len(history.messages) >= self.summarize_threshold:
             logger.info("⚠️ 自动摘要 Redis 历史中...")
 
             full_text = "\n".join(f"{type(m).__name__}: {m.content}" for m in history.messages)

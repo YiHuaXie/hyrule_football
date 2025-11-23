@@ -14,6 +14,7 @@ from hyrule_football.core.odds_engine import OddsEngine
 from .api_service import request_euro_odds_data, request_asia_odds_data
 
 from typing import List
+import json
 
 logger = get_logger(__name__)
 
@@ -52,6 +53,9 @@ def get_odds_for_match(match_info: MatchInfo, company_list: List[Company]) -> Ba
         odds_info.home_summary_list.append(home_odds_summary)
         odds_info.away_summary_list.append(away_odds_summary)
 
+    logger.info(
+        f"✅ 已获取赔率数据：{json.dumps(odds_info.model_dump(), indent=4, ensure_ascii=False)}"
+    )
     return odds_info
 
 
@@ -83,7 +87,10 @@ def _gen_pattern(
 def _gen_euro_odds(cid: str, euro_odds_list: list) -> dict:
     odds = next((o for o in euro_odds_list if cid == o["cid"]), None)
     if not odds:
+        logger.warning(f"❌ 未找到公司 {cid} 的欧指数据")
         return {}
+
+    logger.info(f"原始欧指数据: {json.dumps(odds, indent=4, ensure_ascii=False)}")
 
     home_init_euro = EuroOdds(
         w=odds["initOddsWin"],
@@ -112,8 +119,10 @@ def _gen_euro_odds(cid: str, euro_odds_list: list) -> dict:
 def _gen_asia_odds(cid: str, asia_odds_list: list) -> dict:
     odds = next((o for o in asia_odds_list if cid == o["cid"]), None)
     if not odds:
+        logger.warning(f"❌ 未找到公司 {cid} 的亚盘数据")
         return {}
 
+    logger.info(f"原始亚盘数据: {json.dumps(odds, indent=4, ensure_ascii=False)}")
     home_init_asia = AsiaOdds(
         goal_line=odds["initBet"],
         water_level=odds["initOddsUp"],

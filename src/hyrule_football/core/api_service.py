@@ -83,3 +83,22 @@ def request_asia_odds_data(match_id: str) -> List[dict]:
     except Exception as e:
         logger.error(f"❌ 获取亚盘数据失败：{e}")
         return []
+
+
+def request_league_list() -> List[dict]:
+    """获取联赛列表"""
+    try:
+        url = os.getenv("OUHE_HTML_URL") + "league-center"
+        response = requests.get(url, proxies={"http": None}, timeout=5)
+        html = response.text
+        soup = BeautifulSoup(html, "html.parser")
+
+        script_tag = soup.find("script", id="__NEXT_DATA__", type="application/json")
+        json_object = json.loads(script_tag.get_text())
+        league_list = json_object["props"]["pageProps"]["data"]
+        print(type(league_list))
+
+        return league_list
+    except Exception as e:
+        logger.error(f"❌ 获取联赛列表失败：{e}")
+        return []

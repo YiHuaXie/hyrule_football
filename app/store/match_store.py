@@ -4,8 +4,8 @@ from typing import List, Optional
 
 import redis
 
-from hyrule_football.models import MatchInfo
-from hyrule_football.utils import get_logger
+from app.models import MatchInfo
+from app.utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -39,7 +39,9 @@ class MatchStore:
         if not matches:
             return
 
-        mapping = {m.match_id: json.dumps(m.model_dump(), ensure_ascii=False) for m in matches}
+        mapping = {
+            m.match_id: json.dumps(m.model_dump(), ensure_ascii=False) for m in matches
+        }
         self.r.hset(self.KEY, mapping=mapping)
 
     # -----------------------------

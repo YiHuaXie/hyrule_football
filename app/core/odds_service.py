@@ -1,4 +1,4 @@
-from hyrule_football.models import (
+from app.models import (
     MatchInfo,
     Company,
     BasedMatchOddsInfo,
@@ -9,8 +9,8 @@ from hyrule_football.models import (
     OddsPattern,
 )
 
-from hyrule_football.utils import get_logger
-from hyrule_football.core.odds_engine import OddsEngine
+from app.utils import get_logger
+from app.core.odds_engine import OddsEngine
 from .api_service import request_euro_odds_list, request_asia_odds_list
 
 from typing import List
@@ -19,7 +19,9 @@ import json
 logger = get_logger(__name__)
 
 
-def get_odds_for_match(match_info: MatchInfo, company_list: List[Company]) -> BasedMatchOddsInfo:
+def get_odds_for_match(
+    match_info: MatchInfo, company_list: List[Company]
+) -> BasedMatchOddsInfo:
     """获取某场比赛的赔率数据"""
 
     euro_odds_list = request_euro_odds_list(match_info.match_id)
@@ -69,13 +71,17 @@ def _gen_pattern(
 
     odds_pattern = OddsPattern(company=company)
     # 初始让球方的赔率汇总
-    odds_summary = home_summary if home_summary.init_asia.goal_line <= 0.0 else away_summary
+    odds_summary = (
+        home_summary if home_summary.init_asia.goal_line <= 0.0 else away_summary
+    )
     odds_pattern.init_team_name = odds_summary.team_name
     odds_pattern.init_pattern = OddsEngine.gen_pattern_str(
         odds_summary.init_euro, odds_summary.init_asia, match_league
     )
     # 即时让球方的赔率汇总
-    odds_summary = home_summary if home_summary.now_asia.goal_line <= 0.0 else away_summary
+    odds_summary = (
+        home_summary if home_summary.now_asia.goal_line <= 0.0 else away_summary
+    )
     odds_pattern.now_team_name = odds_summary.team_name
     odds_pattern.now_pattern = OddsEngine.gen_pattern_str(
         odds_summary.now_euro, odds_summary.now_asia, match_league

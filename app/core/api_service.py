@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 import json
 from typing import List
 import os
-from hyrule_football.utils import get_logger
-from hyrule_football.clients import HTTPClient
+from app.utils import get_logger
+from app.clients import HTTPClient
 
 logger = get_logger(__name__)
 

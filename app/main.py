@@ -3,8 +3,8 @@ from pathlib import Path
 
 load_dotenv()
 
-from hyrule_football.clients.lark_client import start_lark_client
-from hyrule_football.utils import configure_root_logger
+from app.clients.lark_client import start_lark_client
+from app.utils import configure_root_logger
 import os
 
 

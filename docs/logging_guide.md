@@ -5,7 +5,7 @@
 ### 1. 在模块中使用日志
 
 ```python
-from hyrule_football.utils import get_logger
+from app.utils import get_logger
 
 # 创建 logger（通常在文件顶部）
 logger = get_logger(__name__)
@@ -67,7 +67,7 @@ python your_script.py
 ### 示例 1：在 odds_image_ocr.py 中使用
 
 ```python
-from hyrule_football.utils import get_logger
+from app.utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -99,7 +99,7 @@ def _save_odds_to_redis(odds_list):
 
 ```python
 # main.py 或 __init__.py
-from hyrule_football.utils import configure_root_logger
+from app.utils import configure_root_logger
 from pathlib import Path
 
 # 配置根 logger（只需调用一次）
@@ -133,7 +133,7 @@ print("✅ 已保存至 Redis")
 
 **之后：**
 ```python
-from hyrule_football.utils import get_logger
+from app.utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -157,7 +157,7 @@ A: 在 `.env` 中设置 `LOG_LEVEL=DEBUG`，生产环境设置 `LOG_LEVEL=INFO`
 A: 使用 `setup_logger` 并指定 `log_file` 参数：
 
 ```python
-from hyrule_football.utils import setup_logger
+from app.utils import setup_logger
 from pathlib import Path
 
 logger = setup_logger(
@@ -172,7 +172,7 @@ A: 使用 `setup_logger` 的 `level` 参数：
 
 ```python
 import logging
-from hyrule_football.utils import setup_logger
+from app.utils import setup_logger
 
 # 这个模块只显示警告及以上
 logger = setup_logger(__name__, level=logging.WARNING)

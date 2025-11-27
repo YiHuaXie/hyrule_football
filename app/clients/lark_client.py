@@ -3,9 +3,9 @@ from lark_oapi.api.im.v1 import *
 import os
 import asyncio
 import json
-from hyrule_football.utils import get_logger
-from hyrule_football.store import LarkUserStore
-from hyrule_football.agents.hyrule_agent import HyruleAgent
+from app.utils import get_logger
+from app.store import LarkUserStore
+from app.agents.hyrule_agent import HyruleAgent
 
 logger = get_logger(__name__)
 
@@ -18,7 +18,9 @@ client = (
 )
 
 
-async def process_message_async(message_text: str, user_id: str, message_id: str, chat_id: str):
+async def process_message_async(
+    message_text: str, user_id: str, message_id: str, chat_id: str
+):
     """异步处理消息并回复"""
     try:
         logger.info(f"Processing message from {user_id}: {message_text}")
@@ -53,7 +55,9 @@ async def process_message_async(message_text: str, user_id: str, message_id: str
         if send_response.success():
             logger.info(f"Successfully sent reply to chat {chat_id}")
         else:
-            logger.error(f"Failed to send reply: {send_response.code}: {send_response.msg}")
+            logger.error(
+                f"Failed to send reply: {send_response.code}: {send_response.msg}"
+            )
 
     except Exception as e:
         logger.error(f"Error processing message: {e}", exc_info=True)
@@ -89,7 +93,9 @@ def _do_p2_im_message_receive_v1(data: P2ImMessageReceiveV1) -> None:
             )
         )
 
-        logger.info(f"message_type: {message_type}, chat_id: {chat_id}, message_id: {message_id}")
+        logger.info(
+            f"message_type: {message_type}, chat_id: {chat_id}, message_id: {message_id}"
+        )
 
         # 只处理文本消息
         if message_type == "text":
@@ -103,7 +109,9 @@ def _do_p2_im_message_receive_v1(data: P2ImMessageReceiveV1) -> None:
                     )
                     # 将异步任务添加到当前事件循环
                     asyncio.create_task(
-                        process_message_async(message_text, user_id or chat_id, message_id, chat_id)
+                        process_message_async(
+                            message_text, user_id or chat_id, message_id, chat_id
+                        )
                     )
 
             except json.JSONDecodeError as e:
@@ -132,7 +140,9 @@ def start_lark_client():
             )
             # https://open.feishu.cn/document/server-side-sdk/python--sdk/handle-events
             .register_p2_im_message_receive_v1(_do_p2_im_message_receive_v1)
-            .register_p2_im_chat_access_event_bot_p2p_chat_entered_v1(_do_p2p_chat_entered)
+            .register_p2_im_chat_access_event_bot_p2p_chat_entered_v1(
+                _do_p2p_chat_entered
+            )
             .build()
         )
 

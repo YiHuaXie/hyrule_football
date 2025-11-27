@@ -1,11 +1,11 @@
-from hyrule_football.core import match_service as _match_service
+from app.core import match_service as _match_service
 from langchain.tools import tool
-from hyrule_football.utils import get_logger
-from hyrule_football.models import MatchInfo
+from app.utils import get_logger
+from app.models import MatchInfo
 from typing import Optional, List
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
-from hyrule_football.store import get_match_store
+from app.store import get_match_store
 
 logger = get_logger(__name__)
 

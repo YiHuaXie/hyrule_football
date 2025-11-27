@@ -9,7 +9,9 @@ class LeagueModel(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     league_id: Annotated[str, Field(..., description="联赛ID", alias="leagueId")]
+
     league_name: Annotated[str, Field(..., description="联赛名称", alias="leagueName")]
+
     cup: Annotated[Optional[str], Field(default=None, description="杯赛标记，1为杯赛")]
 
     @property

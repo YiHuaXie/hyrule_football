@@ -1,4 +1,4 @@
-from hyrule_football.models import EuroOdds
+from app.models import EuroOdds
 
 
 def test_euro_odds():
@@ -8,6 +8,3 @@ def test_euro_odds():
     print(f"即时欧指:{euro}")
     print(f"欧指体系号:{euro.euro_system_no}")
     print(f"转化成 94:{euro.euro_odds_under_94}")
-
-
-test_euro_odds()

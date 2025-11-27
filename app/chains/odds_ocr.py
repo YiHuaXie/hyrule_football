@@ -1,13 +1,13 @@
 from langchain_core.prompts import PromptTemplate
-from hyrule_football.core.odds_engine import OddsEngine
+from app.core.odds_engine import OddsEngine
 from dashscope import MultiModalConversation
 from typing import List
-from hyrule_football.prompts.odds_orc_prompts import ODDS_MARKDOWN_TITLE_PROMPT
+from app.prompts.odds_orc_prompts import ODDS_MARKDOWN_TITLE_PROMPT
 from bs4 import BeautifulSoup
 from markdown import markdown
-from hyrule_football.store import get_odds_store
-from hyrule_football.utils import get_logger, opposite_water_level
-from hyrule_football.models import StandardOdds
+from app.store import get_odds_store
+from app.utils import get_logger, opposite_water_level
+from app.models import StandardOdds
 
 import json
 import os

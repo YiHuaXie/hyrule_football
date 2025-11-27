@@ -1,7 +1,7 @@
-from hyrule_football.utils import asia_handicap_float
+from app.utils import asia_handicap_float
 
 
-def asia_handicap_cases():
+def test_asia_handicap():
     # 从主队角度出发
     #  受让盘，从受20球到受0球 #
     assert asia_handicap_float("受二十球") == 20.0

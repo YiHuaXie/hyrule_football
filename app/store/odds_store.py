@@ -3,8 +3,8 @@ import json
 from typing import List, Optional
 from data import DATA_ODDS_DIR
 from dotenv import load_dotenv as _load_dotenv
-from hyrule_football.utils import get_logger
-from hyrule_football.models import StandardOdds, EuroOdds, AsiaOdds
+from app.utils import get_logger
+from app.models import StandardOdds, EuroOdds, AsiaOdds
 
 import os
 
@@ -44,7 +44,9 @@ class OddsStore:
         """生成欧赔索引 key"""
         return f"odds:{system_name}:euro"
 
-    def _make_asia_key(self, system_name: str, goal_line: float, water_level: str) -> str:
+    def _make_asia_key(
+        self, system_name: str, goal_line: float, water_level: str
+    ) -> str:
         """生成亚盘索引 key"""
         return f"odds:{system_name}:asia:{goal_line}:{water_level}"
 
@@ -123,7 +125,9 @@ class OddsStore:
             pipeline.hset(euro_key, euro_field, odds_json)
 
             # 2. 保存到亚盘索引（Set）
-            asia_key = self._make_asia_key(system_name, odds.goal_line, odds.water_level)
+            asia_key = self._make_asia_key(
+                system_name, odds.goal_line, odds.water_level
+            )
             pipeline.sadd(asia_key, odds_json)
 
         pipeline.execute()
@@ -245,7 +249,9 @@ class OddsStore:
     # QUERY 条件查询
     # -----------------------------
 
-    def query_odds_for_euro(self, system_name: str, euro: EuroOdds) -> Optional[StandardOdds]:
+    def query_odds_for_euro(
+        self, system_name: str, euro: EuroOdds
+    ) -> Optional[StandardOdds]:
         """查询某体系的标准赔率（根据欧赔 h, d, a 三个字段）"""
         euro_key = self._make_euro_key(system_name)
         euro_field = self._make_euro_field_from_euro(euro)
@@ -256,7 +262,9 @@ class OddsStore:
 
         return self._json_to_odds(odds_json)
 
-    def query_odds_for_asia(self, system_name: str, asia: AsiaOdds) -> List[StandardOdds]:
+    def query_odds_for_asia(
+        self, system_name: str, asia: AsiaOdds
+    ) -> List[StandardOdds]:
         """
         查询某体系的符合亚盘的所有标准赔率（根据亚盘）
         这是主要查询场景，性能优化重点！
@@ -304,7 +312,10 @@ def _export_all_odds():
             output_path = DATA_ODDS_DIR / f"{system_name}.json"
             with output_path.open("w", encoding="utf-8") as f:
                 json.dump(
-                    [odds.model_dump() for odds in odds_list], f, ensure_ascii=False, indent=2
+                    [odds.model_dump() for odds in odds_list],
+                    f,
+                    ensure_ascii=False,
+                    indent=2,
                 )
             logger.info(f"体系：{system_name}，数据量：{len(odds_list)}")
 

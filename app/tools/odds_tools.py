@@ -1,8 +1,8 @@
 from langchain.tools import tool
-from hyrule_football.utils import get_logger
-from hyrule_football.models import BasedMatchOddsInfo, get_company_by_name, MatchInfo, Company
-from hyrule_football.core.match_service import get_match_for_name
-from hyrule_football.core.odds_service import get_odds_for_match
+from app.utils import get_logger
+from app.models import BasedMatchOddsInfo, get_company_by_name, MatchInfo, Company
+from app.core.match_service import get_match_for_name
+from app.core.odds_service import get_odds_for_match
 from .match_tools import MatchInput
 from typing import Optional, List
 from pydantic import BaseModel, Field

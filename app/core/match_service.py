@@ -1,7 +1,7 @@
 from typing import List
-from hyrule_football.models import MatchInfo
-from hyrule_football.store import get_match_store
-from hyrule_football.utils import get_logger
+from app.models import MatchInfo
+from app.store import get_match_store
+from app.utils import get_logger
 
 from .api_service import request_hot_match_list as _request_hot_match_list
 from .api_service import request_all_match_list as _request_all_match_list
@@ -25,7 +25,9 @@ def get_match_for_name(match_name: str) -> List[MatchInfo]:
     match_list = []
     for a_match in matches:
         match_desc = a_match.match_description
-        condition_1 = team_a and team_b and (team_a in match_desc and team_b in match_desc)
+        condition_1 = (
+            team_a and team_b and (team_a in match_desc and team_b in match_desc)
+        )
         condition_2 = match_name in match_desc
         if condition_1 or condition_2:
             match_list.append(a_match)

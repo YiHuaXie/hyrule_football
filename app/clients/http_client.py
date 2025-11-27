@@ -10,7 +10,7 @@
 
 import requests
 from typing import Optional, Dict, Any
-from hyrule_football.utils import get_logger
+from app.utils import get_logger
 from urllib.parse import urljoin
 
 logger = get_logger(__name__)

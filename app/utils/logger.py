@@ -13,7 +13,9 @@ from typing import Optional
 # 日志格式
 DEFAULT_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 SIMPLE_FORMAT = "%(levelname)s - %(message)s"
-DETAILED_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
+DETAILED_FORMAT = (
+    "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
+)
 
 # 日期格式
 DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -110,7 +112,7 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
         logger 实例
 
     Example:
-        >>> from hyrule_football.utils import get_logger
+        >>> from app.utils import get_logger
         >>> logger = get_logger(__name__)
         >>> logger.info("Hello")
     """
@@ -134,7 +136,7 @@ def configure_root_logger(
         log_file: 日志文件路径
 
     Example:
-        >>> from hyrule_football.utils.logger import configure_root_logger
+        >>> from app.utils.logger import configure_root_logger
         >>> configure_root_logger()  # 在应用启动时调用一次
     """
     if level is None:
@@ -153,5 +155,7 @@ def configure_root_logger(
     if log_file:
         log_file.parent.mkdir(parents=True, exist_ok=True)
         file_handler = logging.FileHandler(log_file, encoding="utf-8")
-        file_handler.setFormatter(logging.Formatter(DEFAULT_FORMAT, datefmt=DATE_FORMAT))
+        file_handler.setFormatter(
+            logging.Formatter(DEFAULT_FORMAT, datefmt=DATE_FORMAT)
+        )
         logging.getLogger().addHandler(file_handler)

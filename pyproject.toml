@@ -1,15 +1,11 @@
-[build-system]
-requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [project]
 name = "hyrule_football"
 version = "0.1.0"
 description = "A LangChain-based football analysis project"
-requires-python = ">=3.12"
+authors = [
+    {name = "NeroXie",email = "xyh30902@163.com"}
+]
+requires-python = ">=3.12,<4.0"
 dependencies = [
     "langchain",
     "langchain-community",
@@ -43,21 +39,9 @@ dev = [
     "jupyter>=1.0.0",
 ]
 
-[tool.black]
-line-length = 100
-target-version = ['py312']
-include = '\.pyi?$'
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = "test_*.py"
-python_classes = "Test*"
-python_functions = "test_*"
-addopts = "-v --cov=src/hyrule_football --cov-report=html --cov-report=term"
-
-[tool.mypy]
-python_version = "3.12"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
-
+[tool.poetry]
+package-mode = false

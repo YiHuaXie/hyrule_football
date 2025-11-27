@@ -2,7 +2,7 @@ from langchain_community.chat_message_histories import RedisChatMessageHistory
 from langchain_core.runnables import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_deepseek import ChatDeepSeek
-from hyrule_football.utils import get_logger
+from app.utils import get_logger
 import os
 
 logger = get_logger(__name__)
@@ -35,7 +35,9 @@ class ChatMemory:
             "用第一人称“我”进行简洁总结，并提取重要的长期信息。\n"
             "输出格式：\n总结摘要 | 过去对话关键信息"
         )
-        prompt = ChatPromptTemplate.from_messages([("system", system_prompt), ("user", "{input}")])
+        prompt = ChatPromptTemplate.from_messages(
+            [("system", system_prompt), ("user", "{input}")]
+        )
         chain = prompt | self.llm
         return chain.invoke({"input": raw_messages})
 
@@ -55,7 +57,9 @@ class ChatMemory:
         if len(history.messages) >= self.summarize_threshold:
             logger.info("⚠️ 自动摘要 Redis 历史中...")
 
-            full_text = "\n".join(f"{type(m).__name__}: {m.content}" for m in history.messages)
+            full_text = "\n".join(
+                f"{type(m).__name__}: {m.content}" for m in history.messages
+            )
             summary_msg = self._summarize_messages(full_text)
 
             history.clear()

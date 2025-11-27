@@ -1,8 +1,8 @@
 from typing import List
 from typing import Optional, List
-from hyrule_football.store import get_odds_store
-from hyrule_football.models import StandardOdds, EuroOdds, AsiaOdds, EuroStandardOddsRange
-from hyrule_football.utils import get_league_name
+from app.store import get_odds_store
+from app.models import StandardOdds, EuroOdds, AsiaOdds, EuroStandardOddsRange
+from app.utils import get_league_name
 
 
 class OddsEngine:

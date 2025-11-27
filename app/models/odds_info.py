@@ -1,7 +1,7 @@
 from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator
 from typing_extensions import Annotated
-from hyrule_football.utils import water_level_str, asia_handicap_float
+from app.utils import water_level_str, asia_handicap_float
 from .match_info import MatchInfo
 from .company import Company
 
@@ -125,9 +125,13 @@ class OddsPattern(BaseModel):
 
     company: Annotated[Company, Field(..., description="博彩公司")]
 
-    init_team_name: Annotated[Optional[str], Field(default=None, description="初始让球方")]
+    init_team_name: Annotated[
+        Optional[str], Field(default=None, description="初始让球方")
+    ]
 
-    now_team_name: Annotated[Optional[str], Field(default=None, description="即时让球方")]
+    now_team_name: Annotated[
+        Optional[str], Field(default=None, description="即时让球方")
+    ]
 
     init_pattern: Annotated[
         Optional[str],

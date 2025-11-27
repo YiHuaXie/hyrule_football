@@ -11,7 +11,7 @@ from hyrule_football.models import (
 
 from hyrule_football.utils import get_logger
 from hyrule_football.core.odds_engine import OddsEngine
-from .api_service import request_euro_odds_data, request_asia_odds_data
+from .api_service import request_euro_odds_list, request_asia_odds_list
 
 from typing import List
 import json
@@ -22,8 +22,8 @@ logger = get_logger(__name__)
 def get_odds_for_match(match_info: MatchInfo, company_list: List[Company]) -> BasedMatchOddsInfo:
     """获取某场比赛的赔率数据"""
 
-    euro_odds_list = request_euro_odds_data(match_info.match_id)
-    asia_odds_list = request_asia_odds_data(match_info.match_id)
+    euro_odds_list = request_euro_odds_list(match_info.match_id)
+    asia_odds_list = request_asia_odds_list(match_info.match_id)
 
     if not euro_odds_list and not asia_odds_list:
         return BasedMatchOddsInfo(match_info=match_info)

@@ -5,6 +5,9 @@ from typing import List, Optional
 import redis
 
 from hyrule_football.models import MatchInfo
+from hyrule_football.utils import get_logger
+
+logger = get_logger(__name__)
 
 
 class MatchStore:
@@ -18,7 +21,7 @@ class MatchStore:
 
     KEY = "match:info"
 
-    def __init__(self) -> None:
+    def __init__(self):
         redis_url = os.getenv("REDIS_DEFAULT_URL")
         self.r = redis.Redis.from_url(redis_url, decode_responses=True)
 
@@ -66,6 +69,9 @@ class MatchStore:
     def clear_all(self) -> None:
         """清空所有 MatchInfo 缓存"""
         self.r.delete(self.KEY)
+        logger.info("✅ 已清空所有 MatchInfo 缓存")
+        # logger.info("--------------------------------------------------------")
+        # logger.info(f"{self.r.hvals(self.KEY)}")
 
 
 _singleton_store: MatchStore | None = None

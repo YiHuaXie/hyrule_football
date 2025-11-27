@@ -2,46 +2,37 @@
 name = "hyrule_football"
 version = "0.1.0"
 description = "A LangChain-based football analysis project"
-authors = [
-    {name = "NeroXie",email = "xyh30902@163.com"}
-]
+readme = "README.md"
 requires-python = ">=3.12,<4.0"
 dependencies = [
-    "langchain",
-    "langchain-community",
-    "langchain-core",
-    "langchain-openai",
-    "langchain-deepseek",
-    # 环境变量
-    "python-dotenv",
-    # 向量检索
-    "faiss-cpu",
-    # Embeddings/LLM
-    "dashscope",
-    "unstructured",
-    "markdown",
-    "redis",
-    "lark-oapi (>=1.4.24,<2.0.0)",
-    "readability-lxml (>=0.8.4.1,<0.9.0.0)",
+    "langchain (>=1.1.0,<2.0.0)",
+    "langchain-community (>=0.4.1,<0.5.0)",
+    "langchain-deepseek (>=1.0.1,<2.0.0)",
+    "langchain-openai (>=1.1.0,<2.0.0)",
+    "pydantic (>=2.12.4,<3.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "redis (>=7.1.0,<8.0.0)",
     "beautifulsoup4 (>=4.14.2,<5.0.0)",
-    "lxml (>=6.0.2,<7.0.0)",
-    "html2text (>=2025.4.15,<2026.0.0)",
+    "lark-oapi (>=1.4.24,<2.0.0)",
+    "dashscope (>=1.25.2,<2.0.0)",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "black>=23.0.0",
-    "flake8>=6.1.0",
-    "mypy>=1.7.0",
-    "ipython>=8.18.0",
-    "jupyter>=1.0.0",
-]
+[tool.black]
+line-length = 100
+target-version = ['py312']
+include = '\.pyi?$'
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
 
 [tool.poetry]
-package-mode = false
+name = "hyrule_football"
+version = "0.1.0"
+package-mode = true
+
+packages = [
+    { include = "hyrule_football" }
+]

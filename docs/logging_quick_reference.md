@@ -3,7 +3,7 @@
 ## 1. 导入和创建 Logger
 
 ```python
-from app.utils import get_logger
+from hyrule_football.utils import get_logger
 
 logger = get_logger(__name__)
 ```
@@ -67,7 +67,7 @@ python your_script.py
 ## 6. 实际示例
 
 ```python
-from app.utils import get_logger
+from hyrule_football.utils import get_logger
 
 logger = get_logger(__name__)
 

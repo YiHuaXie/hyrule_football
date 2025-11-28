@@ -1,7 +1,13 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+
+ENV = os.getenv("APP_ENV", "dev")
+
+env_file = ".env" if ENV == "release" else ".env.dev"
 
 
 class Settings(BaseSettings):
+    APP_ENV: str
     OUHE_HTML_URL: str
     OUHE_API_URL: str
     OUHE_API_HOST: str
@@ -15,7 +21,7 @@ class Settings(BaseSettings):
     LOG_FILE: str = "app.log"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=env_file,
         env_file_encoding="utf-8",
         # 忽略 python_env/openai_api_key 等未在模型中声明的字段
         extra="ignore",

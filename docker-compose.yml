@@ -8,6 +8,8 @@ services:
     env_file:
       - .env
     environment:
+      - APP_ENV=release
+      - LOG_FILE=app.log
       - TZ=Asia/Shanghai
       - REDIS_DEFAULT_URL=redis://redis:6379/0
     volumes:

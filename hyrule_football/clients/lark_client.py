@@ -1,6 +1,5 @@
 import lark_oapi as lark
 from lark_oapi.api.im.v1 import *
-import os
 import asyncio
 import json
 from hyrule_football.utils import get_logger
@@ -8,13 +7,15 @@ from hyrule_football.store import LarkUserStore
 from hyrule_football.agents.hyrule_agent import HyruleAgent
 from hyrule_football.config import settings
 
+lark_log_level = lark.LogLevel.DEBUG if settings.APP_ENV == "dev" else lark.LogLevel.INFO
+
 logger = get_logger(__name__)
 
 client = (
     lark.Client.builder()
     .app_id(settings.LARK_APP_ID)
     .app_secret(settings.LARK_APP_SECRET)
-    .log_level(lark.LogLevel.DEBUG)
+    .log_level(lark_log_level)
     .build()
 )
 
@@ -144,7 +145,7 @@ def start_lark_client():
             app_id=settings.LARK_APP_ID,
             app_secret=settings.LARK_APP_SECRET,
             event_handler=event_handler,
-            log_level=lark.LogLevel.DEBUG,
+            log_level=lark_log_level,
         )
 
         logger.info("Starting WebSocket connection...")

@@ -11,15 +11,6 @@ logger = get_logger(__name__)
 
 
 @tool
-def update_match_list() -> List[str]:
-    """更新赛事列表"""
-    logger.info(">>> [Tool] update_match_list 被调用")
-    matches = _match_service.request_all_match_list()
-    match_list = [m.match_description for m in matches]
-    return match_list
-
-
-@tool
 def get_match_list() -> List[str]:
     """查询所有比赛（赛事）"""
 

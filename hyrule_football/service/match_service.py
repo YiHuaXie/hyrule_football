@@ -1,10 +1,10 @@
 from typing import List
 from hyrule_football.schema import MatchInfo
-from hyrule_football.store import get_match_store
+from hyrule_football.store import daily_match_store
 from hyrule_football.utils import get_logger
 
-from .api_service import request_hot_match_list as _request_hot_match_list
-from .api_service import request_all_match_list as _request_all_match_list
+from .api_service import request_hot_match_list
+from .api_service import request_daily_match_list
 
 logger = get_logger(__name__)
 
@@ -18,9 +18,9 @@ def get_match_for_name(match_name: str) -> List[MatchInfo]:
         team_a = None
         team_b = None
 
-    matches = get_match_store().list_matches()
+    matches = daily_match_store.list_matches()
     if not matches:
-        matches = request_all_match_list()
+        matches = sync_daily_match_list()
 
     match_list = []
     for a_match in matches:
@@ -33,14 +33,16 @@ def get_match_for_name(match_name: str) -> List[MatchInfo]:
     return match_list
 
 
-def request_hot_match_list() -> List[MatchInfo]:
-    return [MatchInfo(**m) for m in _request_hot_match_list()]
+def get_hot_match_list() -> List[MatchInfo]:
+    return [MatchInfo(**m) for m in request_hot_match_list()]
 
 
-def request_all_match_list():
-    match_list = _request_all_match_list()
-    matches = [MatchInfo(**m) for m in match_list]
-    store = get_match_store()
-    store.clear_all()
-    store.save_matches(matches)
-    return matches
+def sync_daily_match_list() -> List[MatchInfo]:
+    try:
+        match_list = request_daily_match_list()
+        matches = [MatchInfo(**m) for m in match_list]
+        daily_match_store.save_matches(matches)
+        return matches
+    except Exception as e:
+        logger.error(f"❌ 同步赛事列表失败：{e}")
+        return []

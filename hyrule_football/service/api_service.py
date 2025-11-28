@@ -117,7 +117,7 @@ def request_hot_match_list() -> List[dict]:
         return []
 
 
-def request_all_match_list():
+def request_daily_match_list():
     try:
         params = {"matchType": 1, "page": 0, "size": 10000, "type": 1}
         res = _post_request("web/matchLiveList", params=params)

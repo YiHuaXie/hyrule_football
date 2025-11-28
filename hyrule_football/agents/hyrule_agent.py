@@ -2,8 +2,6 @@ from langchain_deepseek import ChatDeepSeek
 from langchain.agents import create_agent
 from langchain_core.runnables import RunnableWithMessageHistory
 from hyrule_football.config import settings
-
-# from dotenv import load_dotenv as _load_dotenv
 from hyrule_football.utils import get_logger
 from hyrule_football.prompts.hyrule_prompt import HyrulePrompt
 from hyrule_football.memory.chat_memory import ChatMemory
@@ -13,12 +11,7 @@ from hyrule_football.tools import (
     get_match_for_matchup,
     get_odds_info_for_match,
     plan_match_odds_query,
-    update_match_list,
 )
-
-# import os
-
-# _load_dotenv()
 
 logger = get_logger(__name__)
 
@@ -32,7 +25,6 @@ class HyruleAgent:
         )
 
         self.tools = [
-            update_match_list,
             get_match_list,
             get_match_for_team,
             get_match_for_matchup,

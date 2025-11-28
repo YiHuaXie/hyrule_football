@@ -7,9 +7,9 @@ from hyrule_football.store import LarkUserStore
 from hyrule_football.agents.hyrule_agent import HyruleAgent
 from hyrule_football.config import settings
 
-lark_log_level = lark.LogLevel.DEBUG if settings.APP_ENV == "dev" else lark.LogLevel.INFO
-
 logger = get_logger(__name__)
+
+lark_log_level = lark.LogLevel.DEBUG if settings.APP_ENV == "dev" else lark.LogLevel.INFO
 
 client = (
     lark.Client.builder()

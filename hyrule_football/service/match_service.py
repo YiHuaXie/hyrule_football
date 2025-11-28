@@ -42,6 +42,7 @@ def sync_daily_match_list() -> List[MatchInfo]:
         match_list = request_daily_match_list()
         matches = [MatchInfo(**m) for m in match_list]
         daily_match_store.save_matches(matches)
+        logger.info(f"✅ 已同步 {len(matches)} 场赛事")
         return matches
     except Exception as e:
         logger.error(f"❌ 同步赛事列表失败：{e}")

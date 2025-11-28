@@ -2,7 +2,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import os
 
 ENV = os.getenv("APP_ENV", "dev")
-
 env_file = ".env" if ENV == "release" else ".env.dev"
 
 

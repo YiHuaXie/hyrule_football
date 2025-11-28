@@ -29,10 +29,14 @@ services:
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
-      - redis_data:/data
+      - redis_data:/var/lib/redis-stack
     networks:
       - host_network
-    command: redis-stack-server
+    command: >
+      redis-stack-server
+      --appendonly yes
+      --appendfsync everysec
+      --save "300 1"
 
 networks:
   host_network:

@@ -1,13 +1,10 @@
 import redis
 import json
 from typing import List, Optional
-from dotenv import load_dotenv as _load_dotenv
 from hyrule_football.utils import get_logger
 from hyrule_football.schema import StandardOdds, EuroOdds, AsiaOdds
 from hyrule_football.data import DATA_ODDS_DIR
-import os
-
-_load_dotenv()
+from hyrule_football.config import settings
 
 logger = get_logger(__name__)
 
@@ -29,7 +26,7 @@ class OddsStore:
     """
 
     def __init__(self):
-        redis_url = os.getenv("REDIS_DEFAULT_URL")
+        redis_url = settings.REDIS_DEFAULT_URL
         self.r = redis.Redis.from_url(redis_url, decode_responses=True)
 
         if not self._has_any_odds:

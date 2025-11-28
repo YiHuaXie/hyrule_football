@@ -1,7 +1,9 @@
 from langchain_deepseek import ChatDeepSeek
 from langchain.agents import create_agent
 from langchain_core.runnables import RunnableWithMessageHistory
-from dotenv import load_dotenv as _load_dotenv
+from hyrule_football.config import settings
+
+# from dotenv import load_dotenv as _load_dotenv
 from hyrule_football.utils import get_logger
 from hyrule_football.prompts.hyrule_prompt import HyrulePrompt
 from hyrule_football.memory.chat_memory import ChatMemory
@@ -14,9 +16,9 @@ from hyrule_football.tools import (
     update_match_list,
 )
 
-import os
+# import os
 
-_load_dotenv()
+# _load_dotenv()
 
 logger = get_logger(__name__)
 
@@ -25,8 +27,8 @@ class HyruleAgent:
 
     def __init__(self):
         self.llm = ChatDeepSeek(
-            model=os.environ.get("DEEPSEEK_CHAT"),
-            api_key=os.environ.get("DEEPSEEK_API_KEY"),
+            model=settings.DEEPSEEK_CHAT,  # os.environ.get("DEEPSEEK_CHAT"),
+            api_key=settings.DEEPSEEK_API_KEY,  # os.environ.get("DEEPSEEK_API_KEY"),
         )
 
         self.tools = [

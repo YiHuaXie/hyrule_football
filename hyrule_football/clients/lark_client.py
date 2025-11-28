@@ -6,13 +6,14 @@ import json
 from hyrule_football.utils import get_logger
 from hyrule_football.store import LarkUserStore
 from hyrule_football.agents.hyrule_agent import HyruleAgent
+from hyrule_football.config import settings
 
 logger = get_logger(__name__)
 
 client = (
     lark.Client.builder()
-    .app_id(os.getenv("LARK_APP_ID"))
-    .app_secret(os.getenv("LARK_APP_SECRET"))
+    .app_id(settings.LARK_APP_ID)
+    .app_secret(settings.LARK_APP_SECRET)
     .log_level(lark.LogLevel.DEBUG)
     .build()
 )
@@ -127,7 +128,7 @@ def start_lark_client():
         # 创建事件处理器 - 使用正确的Builder模式
         event_handler = (
             lark.EventDispatcherHandler.builder(
-                verification_token=os.getenv("LARK_VERIFICATION_TOKEN"),
+                verification_token=settings.LARK_VERIFICATION_TOKEN,
                 encrypt_key="",  # 如果有加密key，在这里填写
             )
             # https://open.feishu.cn/document/server-side-sdk/python--sdk/handle-events
@@ -140,8 +141,8 @@ def start_lark_client():
 
         # 创建 WebSocket 客户端并启动
         ws_client = lark.ws.Client(
-            app_id=os.getenv("LARK_APP_ID"),
-            app_secret=os.getenv("LARK_APP_SECRET"),
+            app_id=settings.LARK_APP_ID,
+            app_secret=settings.LARK_APP_SECRET,
             event_handler=event_handler,
             log_level=lark.LogLevel.DEBUG,
         )

@@ -4,7 +4,7 @@ from langchain_community.chat_message_histories import RedisChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_deepseek import ChatDeepSeek
 from hyrule_football.utils import get_logger
-import os
+from hyrule_football.config import settings
 
 logger = get_logger(__name__)
 
@@ -20,11 +20,11 @@ class ChatMemory:
         self.summarize_threshold = summarize_threshold
         self.memory_ttl = memory_ttl
         self.llm = ChatDeepSeek(
-            model=os.environ.get("DEEPSEEK_CHAT"),
-            api_key=os.environ.get("DEEPSEEK_API_KEY"),
+            model=settings.DEEPSEEK_CHAT,
+            api_key=settings.DEEPSEEK_API_KEY,
         )
 
-        self.redis_url = os.getenv("REDIS_DEFAULT_URL")
+        self.redis_url = settings.REDIS_DEFAULT_URL
 
     # -------------------------------------------------------------------------
     #  自动摘要逻辑

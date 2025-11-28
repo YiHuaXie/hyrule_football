@@ -10,7 +10,7 @@ from .asia_odds import AsiaOdds
 class OddsSummary(BaseModel):
     """生成「赔率汇总模型」"""
 
-    company: Annotated[Company, Field(..., description="博彩公司")]
+    cid: Annotated[int, Field(..., description="博彩公司ID")]
 
     team_name: Annotated[str, Field(..., description="球队名称")]
 
@@ -48,7 +48,7 @@ class OddsSummary(BaseModel):
 class OddsPattern(BaseModel):
     """生成「欧指格局模型」"""
 
-    company: Annotated[Company, Field(..., description="博彩公司")]
+    cid: Annotated[int, Field(..., description="博彩公司ID")]
 
     init_team_name: Annotated[Optional[str], Field(default=None, description="初始让球方")]
 

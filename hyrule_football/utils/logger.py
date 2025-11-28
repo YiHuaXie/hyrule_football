@@ -5,10 +5,10 @@
 """
 
 import logging
-import os
 import sys
 from pathlib import Path
 from typing import Optional
+from hyrule_football.config import settings
 
 # 日志格式
 DEFAULT_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -26,7 +26,7 @@ def get_log_level() -> int:
     Returns:
         日志级别（logging.DEBUG, logging.INFO 等）
     """
-    log_level_str = os.getenv("LOG_LEVEL", "INFO").upper()
+    log_level_str = settings.LOG_LEVEL.upper()
 
     level_mapping = {
         "DEBUG": logging.DEBUG,

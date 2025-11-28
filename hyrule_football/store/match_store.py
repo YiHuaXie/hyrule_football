@@ -1,8 +1,8 @@
 import json
-import os
 from typing import List, Optional
 import redis
 from hyrule_football.schema import MatchInfo
+from hyrule_football.config import settings
 
 
 class MatchStore:
@@ -17,7 +17,7 @@ class MatchStore:
     KEY = "match:info"
 
     def __init__(self) -> None:
-        redis_url = os.getenv("REDIS_DEFAULT_URL")
+        redis_url = settings.REDIS_DEFAULT_URL
         self.r = redis.Redis.from_url(redis_url, decode_responses=True)
 
     # -----------------------------

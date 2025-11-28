@@ -5,7 +5,7 @@ from hyrule_football.schema import MatchInfo
 from typing import Optional, List
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
-from hyrule_football.store import get_match_store
+from hyrule_football.store import daily_match_store
 
 logger = get_logger(__name__)
 
@@ -15,7 +15,7 @@ def get_match_list() -> List[str]:
     """查询所有比赛（赛事）"""
 
     logger.info(">>> [Tool] get_match_list 被调用")
-    matches = get_match_store().list_matches()
+    matches = daily_match_store.list_matches()
     match_list = [m.match_description for m in matches]
     return match_list
 

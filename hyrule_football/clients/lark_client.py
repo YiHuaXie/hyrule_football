@@ -27,7 +27,8 @@ async def process_message_async(message_text: str, user_id: str, message_id: str
         # 记录用户信息
         LarkUserStore.add_user(user_id, {"user_id": user_id, "chat_id": chat_id})
 
-        reply_text = HyruleAgent().run_agent(message_text, user_id=user_id)
+        agent = HyruleAgent()
+        reply_text = await agent.run_agent(message_text, user_id=user_id)
         # reply_text = response["output"]
 
         logger.info(f"Generated reply: {reply_text}")

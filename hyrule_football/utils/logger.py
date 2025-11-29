@@ -83,8 +83,8 @@ def setup_logger(
     formatter = logging.Formatter(log_format, datefmt=DATE_FORMAT)
 
     # 控制台处理器
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.DEBUG)
+    console_handler = logging.StreamHandler(sys.stderr)
+    console_handler.setLevel(level)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
@@ -145,7 +145,7 @@ def configure_root_logger(
         format=DEFAULT_FORMAT,
         datefmt=DATE_FORMAT,
         handlers=[
-            logging.StreamHandler(sys.stdout),
+            logging.StreamHandler(sys.stderr),
         ],
     )
 

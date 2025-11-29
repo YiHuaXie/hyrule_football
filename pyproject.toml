@@ -17,6 +17,7 @@ dependencies = [
     "dashscope (>=1.25.2,<2.0.0)",
     "langchain-mcp-adapters (>=0.1.14,<0.2.0)",
     "apscheduler (>=3.11.1,<4.0.0)",
+    "langgraph (>=1.0.4,<2.0.0)",
 ]
 
 [tool.black]

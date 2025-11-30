@@ -1,9 +1,15 @@
-from mcp.server.fastmcp import FastMCP
-from hyrule_football.service import match_service
-from hyrule_football.utils import get_logger
-from hyrule_football.schema import MatchInfo
+from pathlib import Path
 from typing import List
 
+from mcp.server.fastmcp import FastMCP
+
+from hyrule_football.config import settings
+from hyrule_football.schema import MatchInfo
+from hyrule_football.service import match_service
+from hyrule_football.utils import configure_root_logger, get_logger
+
+# 确保 MCP 子进程也把日志写入同一个日志文件
+configure_root_logger(log_file=Path("logs") / settings.LOG_FILE)
 logger = get_logger(__name__)
 
 match_mcp = FastMCP("Match")

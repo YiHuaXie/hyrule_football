@@ -1,10 +1,15 @@
-from mcp.server.fastmcp import FastMCP
-from hyrule_football.utils import get_logger
-from hyrule_football.store import daily_match_store
-from hyrule_football.service.odds_service import get_odds_for_match
-from hyrule_football.schema import Company
+from pathlib import Path
 from typing import List
 
+from mcp.server.fastmcp import FastMCP
+
+from hyrule_football.config import settings
+from hyrule_football.schema import Company
+from hyrule_football.store import daily_match_store
+from hyrule_football.service.odds_service import get_odds_for_match
+from hyrule_football.utils import configure_root_logger, get_logger
+
+configure_root_logger(log_file=Path("logs") / settings.LOG_FILE)
 logger = get_logger(__name__)
 
 odds_mcp = FastMCP("Odds")

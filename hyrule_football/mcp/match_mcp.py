@@ -7,6 +7,7 @@ from hyrule_football.config import settings
 from hyrule_football.schema import MatchInfo
 from hyrule_football.service import match_service
 from hyrule_football.utils import configure_root_logger, get_logger
+import uvicorn
 
 # 确保 MCP 子进程也把日志写入同一个日志文件
 configure_root_logger(log_file=Path("logs") / settings.LOG_FILE)

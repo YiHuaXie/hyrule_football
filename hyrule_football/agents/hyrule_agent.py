@@ -1,6 +1,3 @@
-from pathlib import Path
-import os
-from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_deepseek import ChatDeepSeek
 from langchain.agents import create_agent
 from langchain_core.runnables import RunnableWithMessageHistory
@@ -9,13 +6,9 @@ from hyrule_football.config import settings
 from hyrule_football.utils import get_logger
 from hyrule_football.prompts.hyrule_prompt import HyrulePrompt
 from hyrule_football.memory.chat_memory import ChatMemory
-
+from hyrule_football.mcp.mcp_client import mcp_client
 
 logger = get_logger(__name__)
-
-MCP_DIR = Path(__file__).parent / "../mcp/"
-MATCH_MCP_SERVER = (MCP_DIR / "match_mcp.py").resolve()
-ODDS_MCP_SERVER = (MCP_DIR / "odds_mcp.py").resolve()
 
 
 class HyruleAgent:
@@ -27,28 +20,7 @@ class HyruleAgent:
         )
         self.prompt = HyrulePrompt().prompt_structure()
         self.chat_memory = ChatMemory()
-
-        # 注意：langchain-mcp-adapters 早期版本在创建 stdio 子进程时
-        # 不会自动继承父进程的环境变量（只保留 PATH），
-        # 会导致子进程里拿不到 OUHE_*/REDIS_*/DEEPSEEK_* 等配置，
-        # 在 Docker 中就会出现 Settings 校验失败 -> MCP "Connection closed"。
-        # 这里显式传入 os.environ，保证子进程环境和主进程一致。
-        self.mcp_client = MultiServerMCPClient(
-            {
-                "match": {
-                    "command": "python",
-                    "args": [str(MATCH_MCP_SERVER)],
-                    "transport": "stdio",
-                    "env": os.environ.copy(),
-                },
-                "odds": {
-                    "command": "python",
-                    "args": [str(ODDS_MCP_SERVER)],
-                    "transport": "stdio",
-                    "env": os.environ.copy(),
-                },
-            }
-        )
+        self.mcp_client = mcp_client
 
     async def _create_agent(self):
         """创建 Agent"""

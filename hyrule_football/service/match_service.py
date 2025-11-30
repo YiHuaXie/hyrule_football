@@ -18,9 +18,7 @@ def get_match_for_name(match_name: str) -> List[MatchInfo]:
         team_a = None
         team_b = None
 
-    matches = daily_match_store.list_matches()
-    if not matches:
-        matches = sync_daily_match_list()
+    matches = get_daily_match_list()
 
     match_list = []
     for a_match in matches:
@@ -43,10 +41,7 @@ def get_fixed_daily_matches(
 
     team_b = team_b.strip() if team_b else None
 
-    matches = daily_match_store.list_matches()
-    if not matches:
-        matches = sync_daily_match_list()
-
+    matches = get_daily_match_list()
     # 情况 1：双队匹配 → 返回单个 MatchInfo 或 None
     if team_b:
         for m in matches:
@@ -69,7 +64,10 @@ def get_hot_match_list() -> List[MatchInfo]:
 
 
 def get_daily_match_list() -> List[MatchInfo]:
-    return daily_match_store.list_matches()
+    matches = daily_match_store.list_matches()
+    if not matches:
+        matches = sync_daily_match_list()
+    return matches
 
 
 def sync_daily_match_list() -> List[MatchInfo]:

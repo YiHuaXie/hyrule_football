@@ -1,11 +1,10 @@
 from langchain_deepseek import ChatDeepSeek
 from langchain.agents import create_agent
 from langchain_core.runnables import RunnableWithMessageHistory
-
 from hyrule_football.config import settings
 from hyrule_football.utils import get_logger
-from hyrule_football.prompts.hyrule_prompt import HyrulePrompt
-from hyrule_football.memory.chat_memory import ChatMemory
+from hyrule_football.agents.prompts.hyrule_prompt import HyrulePrompt
+from hyrule_football.agents.memory.chat_memory import ChatMemory
 from hyrule_football.mcp.mcp_client import mcp_client
 
 logger = get_logger(__name__)

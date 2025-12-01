@@ -1,8 +1,8 @@
 from hyrule_football.utils import configure_root_logger
 from hyrule_football.config import settings
 from hyrule_football.mcp.mcp_server import mcp_server, MCP_SERVER_PORT
-from hyrule_football.tasks import start_all_tasks
-from hyrule_football.clients.lark_client import start_lark_client
+from hyrule_football.task import start_all_tasks
+from hyrule_football.lark_client import start_lark_client
 from pathlib import Path
 import threading
 import uvicorn

@@ -10,9 +10,7 @@ import uvicorn
 
 def main():
     # 配置日志
-    log_level = settings.LOG_LEVEL.upper()
-    log_file = Path("logs") / settings.LOG_FILE
-    configure_root_logger(level=log_level, log_file=log_file)
+    configure_root_logger(Path("logs") / settings.LOG_FILE)
 
     # 定时器任务
     start_all_tasks()

@@ -5,18 +5,10 @@ from hyrule_football.utils import get_logger
 logger = get_logger(__name__)
 
 
-def _daily_match_scheduler() -> None:
+def daily_match_task() -> None:
     """定时同步每日比赛数据"""
     logger.info("✅启动每日赛事同步任务")
     scheduler = BackgroundScheduler(timezone="Asia/Shanghai")
-    scheduler.add_job(
-        sync_daily_match_list,
-        "cron",
-        hour="0,3,6,9,10,11,12,15,18,21",
-        minute=5,
-    )
+    # 每 3 小时同步一次
+    scheduler.add_job(sync_daily_match_list, "interval", hours=3)
     scheduler.start()
-
-
-def start_scheduler() -> None:
-    _daily_match_scheduler()

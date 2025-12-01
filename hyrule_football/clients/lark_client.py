@@ -152,10 +152,5 @@ def start_lark_client():
 
         logger.info("Starting WebSocket connection...")
         ws_client.start()
-
     except Exception as e:
         logger.error(f"Error in WebSocket Client: {e}", exc_info=True)
-
-
-def start_lark_client_thread():
-    threading.Thread(target=start_lark_client, daemon=False).start()

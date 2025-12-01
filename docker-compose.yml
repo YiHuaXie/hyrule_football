@@ -1,10 +1,12 @@
 services:
+  # 主应用（飞书客户端 + Agent）
   app:
     build: .
     container_name: hyrule_football_app
     restart: always
     depends_on:
       - redis
+      # - mcp_server
     env_file:
       - .env
     environment:
@@ -12,8 +14,11 @@ services:
       - LOG_FILE=app.log
       - TZ=Asia/Shanghai
       - REDIS_DEFAULT_URL=redis://redis:6379/0
+      # 混合部署：MCP Server 和主应用在同一容器，使用 localhost
+      # - MCP_SERVER_URL=http://localhost:8001
     volumes:
       - ./logs:/app/logs
+    # command: ["python", "-m", "hyrule_football.main"]
     dns:
       - 8.8.8.8
       - 8.8.4.4

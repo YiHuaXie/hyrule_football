@@ -1,18 +1,16 @@
-from pathlib import Path
 from typing import List
-
 from mcp.server.fastmcp import FastMCP
-
-from hyrule_football.config import settings
 from hyrule_football.schema import Company
 from hyrule_football.store import daily_match_store
 from hyrule_football.service.odds_service import get_odds_for_match
-from hyrule_football.utils import configure_root_logger, get_logger
+from hyrule_football.utils import get_logger
 
-configure_root_logger(log_file=Path("logs") / settings.LOG_FILE)
+
 logger = get_logger(__name__)
 
 odds_mcp = FastMCP("Odds")
+# 设置 MCP 端点路径为根路径（实际路径由 Starlette Mount 控制）
+odds_mcp.settings.streamable_http_path = "/"
 
 
 @odds_mcp.tool(description="查询某场比赛的赔率数据")
@@ -35,4 +33,4 @@ def get_odds_detail_for_match(
 
 
 if __name__ == "__main__":
-    odds_mcp.run(transport="stdio")
+    odds_mcp.run(transport="streamable-http")

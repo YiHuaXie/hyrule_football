@@ -1,19 +1,15 @@
-from pathlib import Path
 from typing import List
-
 from mcp.server.fastmcp import FastMCP
-
-from hyrule_football.config import settings
 from hyrule_football.schema import MatchInfo
 from hyrule_football.service import match_service
-from hyrule_football.utils import configure_root_logger, get_logger
-import uvicorn
+from hyrule_football.utils import get_logger
 
-# 确保 MCP 子进程也把日志写入同一个日志文件
-configure_root_logger(log_file=Path("logs") / settings.LOG_FILE)
+
 logger = get_logger(__name__)
 
 match_mcp = FastMCP("Match")
+# 设置 MCP 端点路径为根路径（实际路径由 Starlette Mount 控制）
+match_mcp.settings.streamable_http_path = "/"
 
 
 @match_mcp.tool(description="查询所有比赛")
@@ -47,4 +43,4 @@ def get_match_for_matchup(team_a: str, team_b: str) -> dict:
 
 
 if __name__ == "__main__":
-    match_mcp.run(transport="stdio")
+    match_mcp.run(transport="streamable-http")

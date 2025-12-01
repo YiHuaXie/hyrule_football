@@ -12,8 +12,8 @@ def _daily_match_scheduler() -> None:
     scheduler.add_job(
         sync_daily_match_list,
         "cron",
-        hour="0,3,6,9,12,15,18,21",
-        minute=0,
+        hour="0,3,6,9,10,11,12,15,18,21",
+        minute=5,
     )
     scheduler.start()
 

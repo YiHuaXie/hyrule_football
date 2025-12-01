@@ -2,6 +2,7 @@ import lark_oapi as lark
 from lark_oapi.api.im.v1 import *
 import asyncio
 import json
+import threading
 from hyrule_football.utils import get_logger
 from hyrule_football.store import LarkUserStore
 from hyrule_football.agents.hyrule_agent import HyruleAgent
@@ -121,7 +122,7 @@ def _do_p2_im_message_receive_v1(data: P2ImMessageReceiveV1) -> None:
 def _do_p2p_chat_entered(data: P2ImChatAccessEventBotP2pChatEnteredV1) -> None:
     """处理用户进入会话事件"""
     # 可以在这里调用发送欢迎消息的逻辑
-    logger.ingo(f"用户进入会话, data: {lark.JSON.marshal(data, indent=4)}")
+    logger.info(f"用户进入会话, data: {lark.JSON.marshal(data, indent=4)}")
 
 
 def start_lark_client():
@@ -154,3 +155,7 @@ def start_lark_client():
 
     except Exception as e:
         logger.error(f"Error in WebSocket Client: {e}", exc_info=True)
+
+
+def start_lark_client_thread():
+    threading.Thread(target=start_lark_client, daemon=False).start()

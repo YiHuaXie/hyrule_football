@@ -50,7 +50,6 @@ async def process_message_async(message_text: str, user_id: str, message_id: str
 
         # 发送回复
         send_response = client.im.v1.message.create(request)
-        send_response.raise_for_status()
         logger.info(f"Successfully sent reply to chat {chat_id}")
     except Exception as e:
         logger.error(f"Error processing message: {e}", exc_info=True)

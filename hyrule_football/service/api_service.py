@@ -162,3 +162,13 @@ def request_league_list() -> List[dict]:
     except Exception as e:
         logger.error(f"❌ 获取联赛列表失败：{e}")
         return []
+
+
+def request_match_detail(match_id: str) -> dict:
+    try:
+        params = {"matchId": match_id}
+        res = _post_request("web/clashAnalysisWeb", params=params)
+        return res.get("data", {})
+    except Exception as e:
+        logger.error(f"❌ 获取亚盘数据失败：{e}")
+        return {}

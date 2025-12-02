@@ -20,3 +20,8 @@ class AsiaOdds(BaseModel):
             v = 0.0 if v == 0.0 else v
             return v
         return asia_handicap_float(v)
+
+    @property
+    def flipped_goal_line(self) -> float:
+        flipped = self.goal_line * -1
+        return 0.0 if flipped == 0.0 else flipped

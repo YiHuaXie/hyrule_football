@@ -107,8 +107,8 @@ def _gen_euro_odds(company: Company, euro_odds_list: list) -> dict:
         return_rate=odds["nowReturnRates"],
     )
 
-    away_init_euro = home_init_euro.opposite_odds
-    away_now_euro = home_now_euro.opposite_odds
+    away_init_euro = home_init_euro.flipped_odds
+    away_now_euro = home_now_euro.flipped_odds
 
     return {
         "home_init_euro": home_init_euro,
@@ -138,20 +138,16 @@ def _gen_asia_odds(company: Company, asia_odds_list: list) -> dict:
         return_rate=odds["nowReturnRates"],
     )
 
-    goal_line = home_init_asia.goal_line * -1
-    goal_line = 0.0 if goal_line == 0.0 else goal_line
     away_init_asia = AsiaOdds(
-        goal_line=goal_line,
+        goal_line=home_init_asia.flipped_goal_line,
         water_level=odds["initOddsDown"],
-        return_rate=odds["initReturnRates"],
+        return_rate=home_init_asia.return_rate,
     )
 
-    goal_line = home_now_asia.goal_line * -1
-    goal_line = 0.0 if goal_line == 0.0 else goal_line
     away_now_asia = AsiaOdds(
-        goal_line=goal_line,
+        goal_line=home_now_asia.flipped_goal_line,
         water_level=odds["nowOddsDown"],
-        return_rate=odds["nowReturnRates"],
+        return_rate=home_now_asia.return_rate,
     )
 
     return {

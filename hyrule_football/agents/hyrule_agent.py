@@ -14,8 +14,8 @@ class HyruleAgent:
 
     def __init__(self):
         self.llm = ChatDeepSeek(
-            model=settings.DEEPSEEK_CHAT,  # os.environ.get("DEEPSEEK_CHAT"),
-            api_key=settings.DEEPSEEK_API_KEY,  # os.environ.get("DEEPSEEK_API_KEY"),
+            model=settings.DEEPSEEK_CHAT,
+            api_key=settings.DEEPSEEK_API_KEY,
         )
         self.prompt = HyrulePrompt().prompt_structure()
         self.chat_memory = ChatMemory()

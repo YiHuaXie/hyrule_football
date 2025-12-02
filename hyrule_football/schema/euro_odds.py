@@ -15,8 +15,8 @@ class EuroOdds(BaseModel):
         return v if isinstance(v, float) else float(v)
 
     @property
-    def opposite_odds(self):
-        """生成对立面的欧指"""
+    def flipped_odds(self):
+        """欧指数据翻转"""
         return EuroOdds(w=self.l, d=self.d, l=self.w, return_rate=self.return_rate)
 
     @property

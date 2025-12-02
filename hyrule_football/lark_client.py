@@ -2,7 +2,6 @@ import lark_oapi as lark
 from lark_oapi.api.im.v1 import *
 import asyncio
 import json
-import threading
 from hyrule_football.utils import get_logger
 from hyrule_football.store import LarkUserStore
 from hyrule_football.agents.hyrule_agent import HyruleAgent
@@ -28,16 +27,14 @@ async def process_message_async(message_text: str, user_id: str, message_id: str
         # 记录用户信息
         LarkUserStore.add_user(user_id, {"user_id": user_id, "chat_id": chat_id})
 
-        agent = HyruleAgent()
-        reply_text = await agent.run_agent(message_text, user_id=user_id)
-        # reply_text = response["output"]
-
+        # 使用普通回复
+        reply_text = await HyruleAgent().run_agent(message_text, user_id=user_id)
         logger.info(f"Generated reply: {reply_text}")
 
-        # 构造消息内容 - 修正JSON格式
+        # 构造消息内容
         content = json.dumps({"text": reply_text}, ensure_ascii=False)
 
-        # 构造发送消息请求 - 修正请求参数
+        # 构造发送消息请求
         request = (
             CreateMessageRequest.builder()
             .receive_id_type("chat_id")
@@ -53,12 +50,8 @@ async def process_message_async(message_text: str, user_id: str, message_id: str
 
         # 发送回复
         send_response = client.im.v1.message.create(request)
-
-        if send_response.success():
-            logger.info(f"Successfully sent reply to chat {chat_id}")
-        else:
-            logger.error(f"Failed to send reply: {send_response.code}: {send_response.msg}")
-
+        send_response.raise_for_status()
+        logger.info(f"Successfully sent reply to chat {chat_id}")
     except Exception as e:
         logger.error(f"Error processing message: {e}", exc_info=True)
 

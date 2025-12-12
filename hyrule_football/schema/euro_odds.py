@@ -57,3 +57,36 @@ class EuroOdds(BaseModel):
             l=round(n_l, 2),
             return_rate=94.0,
         )
+
+
+class CombineEuroOdds(BaseModel):
+    """生成综合欧指(主队+客队)赔率模型"""
+
+    init_w: Annotated[float, Field(..., description="初始主队胜赔率", alias="initOddsWin")]
+    init_d: Annotated[float, Field(..., description="初始平赔率", alias="initOddsDraw")]
+    init_l: Annotated[float, Field(..., description="初始客队胜赔率", alias="initOddsLose")]
+    init_return_rate: Annotated[
+        float, Field(..., description="初始返还率", alias="initReturnRates")
+    ]
+    now_w: Annotated[float, Field(..., description="即时主队胜赔率", alias="nowOddsWin")]
+    now_d: Annotated[float, Field(..., description="即时平赔率", alias="nowOddsDraw")]
+    now_l: Annotated[float, Field(..., description="即时客队胜赔率", alias="nowOddsLose")]
+    now_return_rate: Annotated[float, Field(..., description="即时返还率", alias="nowReturnRates")]
+
+    @property
+    def to_init_odds(self) -> EuroOdds:
+        return EuroOdds(
+            w=self.init_w,
+            d=self.init_d,
+            l=self.init_l,
+            return_rate=self.init_return_rate,
+        )
+
+    @property
+    def to_now_odds(self) -> EuroOdds:
+        return EuroOdds(
+            w=self.now_w,
+            d=self.now_d,
+            l=self.now_l,
+            return_rate=self.now_return_rate,
+        )

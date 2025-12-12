@@ -1,0 +1,282 @@
+[
+  {
+    "cid": 220,
+    "cname": "Norway"
+  },
+  {
+    "cid": 221,
+    "cname": "Bookmaker.eu"
+  },
+  {
+    "cid": 39,
+    "cname": "matchbook"
+  },
+  {
+    "cid": 47,
+    "cname": "Marathon"
+  },
+  {
+    "cid": 176,
+    "cname": "Oddset"
+  },
+  {
+    "cid": 184,
+    "cname": "Pinnacle"
+  },
+  {
+    "cid": 190,
+    "cname": "Nike"
+  },
+  {
+    "cid": 203,
+    "cname": "novibet"
+  },
+  {
+    "cid": 204,
+    "cname": "PMU"
+  },
+  {
+    "cid": 208,
+    "cname": "Marathonbet"
+  },
+  {
+    "cid": 209,
+    "cname": "Paddy Power"
+  },
+  {
+    "cid": 212,
+    "cname": "OddsRing"
+  },
+  {
+    "cid": 217,
+    "cname": "OhmBet"
+  },
+  {
+    "cid": 31,
+    "cname": "Gamebookers"
+  },
+  {
+    "cid": 41,
+    "cname": "Expekt"
+  },
+  {
+    "cid": 171,
+    "cname": "Eurobet"
+  },
+  {
+    "cid": 189,
+    "cname": "Fonbet"
+  },
+  {
+    "cid": 198,
+    "cname": "Jetbull"
+  },
+  {
+    "cid": 199,
+    "cname": "e-stave"
+  },
+  {
+    "cid": 207,
+    "cname": "Efbet"
+  },
+  {
+    "cid": 32,
+    "cname": "必发"
+  },
+  {
+    "cid": 205,
+    "cname": "youwin"
+  },
+  {
+    "cid": 213,
+    "cname": "winner"
+  },
+  {
+    "cid": 214,
+    "cname": "VBet"
+  },
+  {
+    "cid": 218,
+    "cname": "Wellbet"
+  },
+  {
+    "cid": 1,
+    "cname": "伟德"
+  },
+  {
+    "cid": 14,
+    "cname": "立博"
+  },
+  {
+    "cid": 17,
+    "cname": "易胜博"
+  },
+  {
+    "cid": 26,
+    "cname": "威廉希尔"
+  },
+  {
+    "cid": 46,
+    "cname": "香港马会"
+  },
+  {
+    "cid": 52,
+    "cname": "金宝博"
+  },
+  {
+    "cid": 56,
+    "cname": "优胜客"
+  },
+  {
+    "cid": 74,
+    "cname": "利记"
+  },
+  {
+    "cid": 82,
+    "cname": "乐天堂"
+  },
+  {
+    "cid": 87,
+    "cname": "明陞"
+  },
+  {
+    "cid": 90,
+    "cname": "澳门"
+  },
+  {
+    "cid": 103,
+    "cname": "盈禾"
+  },
+  {
+    "cid": 112,
+    "cname": "皇冠"
+  },
+  {
+    "cid": 142,
+    "cname": "竞彩官方"
+  },
+  {
+    "cid": 165,
+    "cname": "博天堂"
+  },
+  {
+    "cid": 181,
+    "cname": "平博"
+  },
+  {
+    "cid": 182,
+    "cname": "万博"
+  },
+  {
+    "cid": 19,
+    "cname": "Coral"
+  },
+  {
+    "cid": 38,
+    "cname": "Bet365"
+  },
+  {
+    "cid": 64,
+    "cname": "bwin"
+  },
+  {
+    "cid": 192,
+    "cname": "Betfred"
+  },
+  {
+    "cid": 194,
+    "cname": "Bet-at-home"
+  },
+  {
+    "cid": 195,
+    "cname": "Boylesports"
+  },
+  {
+    "cid": 196,
+    "cname": "Betway"
+  },
+  {
+    "cid": 206,
+    "cname": "Dafabet"
+  },
+  {
+    "cid": 210,
+    "cname": "ComeOn"
+  },
+  {
+    "cid": 211,
+    "cname": "Betflag"
+  },
+  {
+    "cid": 216,
+    "cname": "Bethard"
+  },
+  {
+    "cid": 68,
+    "cname": "IBCBET"
+  },
+  {
+    "cid": 77,
+    "cname": "Interwetten"
+  },
+  {
+    "cid": 180,
+    "cname": "Iceland"
+  },
+  {
+    "cid": 20,
+    "cname": "SNAI"
+  },
+  {
+    "cid": 185,
+    "cname": "Tote"
+  },
+  {
+    "cid": 187,
+    "cname": "STS"
+  },
+  {
+    "cid": 188,
+    "cname": "Sazka"
+  },
+  {
+    "cid": 191,
+    "cname": "StarPrice"
+  },
+  {
+    "cid": 193,
+    "cname": "skybet"
+  },
+  {
+    "cid": 197,
+    "cname": "Tipico"
+  },
+  {
+    "cid": 202,
+    "cname": "Titanbet"
+  },
+  {
+    "cid": 28,
+    "cname": "10BET"
+  },
+  {
+    "cid": 200,
+    "cname": "888Sport"
+  },
+  {
+    "cid": 215,
+    "cname": "1xBet"
+  },
+  {
+    "cid": 219,
+    "cname": "22Bet"
+  },
+  {
+    "cid": 25,
+    "cname": "12BET"
+  },
+  {
+    "cid": 54,
+    "cname": "18Bet"
+  }
+]

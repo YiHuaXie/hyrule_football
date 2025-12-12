@@ -20,6 +20,8 @@ dependencies = [
     "langgraph (>=1.0.4,<2.0.0)",
     "uvicorn (>=0.38.0,<0.39.0)",
     "sqlalchemy (>=2.0.44,<3.0.0)",
+    "pyexecjs (>=1.5.1,<2.0.0)",
+    "rapidfuzz (>=3.14.3,<4.0.0)",
 ]
 
 [tool.black]

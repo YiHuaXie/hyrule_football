@@ -2,12 +2,13 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from typing import List
-import os
 from hyrule_football.utils import get_logger
-from hyrule_football.config import settings
 import httpx
 from functools import wraps
 from urllib.parse import urlparse, urljoin
+
+OUHE_API_URL = "http://backend.aiball365.com"
+OUHE_HTML_URL = "http://ouhe.aiball365.com"
 
 _common_headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
@@ -15,8 +16,8 @@ _common_headers = {
     "Accept-Encoding": "gzip, deflate",
     "Content-Type": "application/json",
     "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-    "Origin": settings.OUHE_HTML_URL,
-    "Host": urlparse(settings.OUHE_API_URL).hostname,
+    "Origin": OUHE_HTML_URL,
+    "Host": urlparse(OUHE_API_URL).hostname,
 }
 
 _common_params = {"channel": "web", "os": "browser"}
@@ -67,23 +68,21 @@ def _with_common_headers_params(func):
 
 @_with_common_headers_params
 def _get_request(path: str, headers: dict = None, params: dict = None):
-    url = urljoin(settings.OUHE_API_URL, path)
+    url = urljoin(OUHE_API_URL, path)
     logger.info(f"GET {url}, params={params}")
     return _try_request(lambda: httpx.get(url, headers=headers, params=params))
 
 
 @_with_common_headers_params
 def _post_request(path: str, headers: dict = None, params: dict = None):
-    url = urljoin(settings.OUHE_API_URL, path)
+    url = urljoin(OUHE_API_URL, path)
     logger.info(f"POST {url}, params={params}")
     return _try_request(lambda: httpx.post(url, headers=headers, json=params))
 
 
 def _request_page_data(path: str) -> dict | None | list:
     try:
-        response = requests.get(
-            urljoin(settings.OUHE_HTML_URL, path), proxies={"http": None}, timeout=5
-        )
+        response = requests.get(urljoin(OUHE_HTML_URL, path), proxies={"http": None}, timeout=5)
         response.raise_for_status()
         html = response.text
         soup = BeautifulSoup(html, "html.parser")
@@ -148,14 +147,39 @@ def request_asia_odds_detail(match_id: str) -> dict:
         return {}
 
 
-def request_league_list() -> List[dict]:
-    """获取联赛列表"""
+def request_league_data() -> List[dict]:
+    """获取联赛列表（展开所有大洲的联赛）"""
     try:
-        league_list = _request_page_data("league-center") or []
-        return league_list
+        continent_groups = _request_page_data("league-center") or []
+        print(continent_groups)
+        # 展开所有大洲的联赛列表
+        all_leagues = []
+        for continent_group in continent_groups:
+            league_list = continent_group.get("leagueList", [])
+            all_leagues.extend(league_list)
+
+        return all_leagues
     except Exception as e:
         logger.error(f"❌ 获取联赛列表失败：{e}")
         return []
+
+
+def request_league_detail(league_id: str) -> dict:
+    try:
+        continent_groups = _request_page_data("league-center") or []
+        print(continent_groups)
+        # 展开所有大洲的联赛列表
+        all_leagues = []
+        for continent_group in continent_groups:
+            league_list = continent_group.get("leagueList", [])
+            all_leagues.extend(league_list)
+
+        return all_leagues
+    except Exception as e:
+        logger.error(f"❌ 获取联赛列表失败：{e}")
+        return []
+
+    _request_page_data(f"league-center/detail?leagueId={league_id}")
 
 
 def request_match_detail(match_id: str) -> dict:

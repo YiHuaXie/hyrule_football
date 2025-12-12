@@ -1,10 +1,15 @@
 from typing import List, Optional
-from hyrule_football.schema import MatchInfo
+from hyrule_football.schema import MatchInfo, MatchModel, MatchMatcher, DQDMatchModel
 from hyrule_football.store import daily_match_store
-from hyrule_football.utils import get_logger
+from hyrule_football.utils import get_logger, LEAGUE_ALIASES
 
 from .api_service import request_hot_match_list
 from .api_service import request_daily_match_list
+
+from hyrule_football.service import dqd_service as dqd
+from hyrule_football.service import oh_service as oh
+from hyrule_football.database import db_session, Session
+from hyrule_football.repositories.league_repo import LeagueRepo
 
 logger = get_logger(__name__)
 
@@ -77,6 +82,32 @@ def sync_daily_match_list() -> List[MatchInfo]:
         daily_match_store.save_matches(matches)
         logger.info(f"✅ 已同步 {len(matches)} 场赛事")
         return matches
+    except Exception as e:
+        logger.error(f"❌ 同步赛事列表失败：{e}")
+        return []
+
+
+def new_sync_daily_match_list() -> List[MatchModel]:
+    try:
+
+        oh_match_list = oh.request_daily_match_list()
+        oh_match_list = [MatchModel(**m) for m in oh_match_list]
+        dqd_match_list = dqd.request_app_daily_match_list()
+        dqd_match_list = [DQDMatchModel(**m) for m in dqd_match_list]
+        for oh_m in oh_match_list:
+            print(oh_m.match_description)
+            matcher = MatchMatcher(oh_m)
+            same_league_match_list = [
+                m
+                for m in dqd_match_list
+                if m.competition_name in LEAGUE_ALIASES.get(oh_m.league, [])
+            ]
+
+            for dqd_m in same_league_match_list:
+                if matcher.merge_dqd_match(dqd_m):
+                    break
+
+        return oh_match_list
     except Exception as e:
         logger.error(f"❌ 同步赛事列表失败：{e}")
         return []

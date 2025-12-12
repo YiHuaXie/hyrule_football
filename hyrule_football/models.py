@@ -1,7 +1,7 @@
-# from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean
-# from sqlalchemy.sql import func
-# from hyrule_football.database import Base
-
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean
+from sqlalchemy.sql import func
+from hyrule_football.database import Base
+from typing import Dict
 
 # class League(Base):
 #     """联赛模型"""
@@ -22,7 +22,6 @@
 #     def __repr__(self):
 #         return f"<League(leagueId={self.leagueId}, leagueName={self.leagueName})>"
 
-
 # class SystemStandardOdds(Base):
 #     """体系标准赔率模型"""
 
@@ -42,16 +41,28 @@
 #         return f"<Odds(system={self.system}, interval={self.interval}, w={self.w}, d={self.d}, l={self.l})>"
 
 
-# class Company(Base):
-#     """博彩公司模型"""
+class Match(Base):
+    """比赛模型"""
 
-#     __tablename__ = "company"
+    __tablename__ = "match"
 
-#     cid = Column(Integer, primary_key=True, index=True, comment="博彩公司ID")
-#     name = Column(String(50), index=True, nullable=False, comment="博彩公司名称")
+    match_id = Column(String(50), primary_key=True, index=True, comment="比赛ID")
 
-#     def __repr__(self):
-#         return f"<Company(cid={self.cid}, name={self.name})>"
+    league_id = Column(String(50), index=True, nullable=False, comment="联赛ID")
+    league = Column(String(100), index=True, nullable=False, comment="联赛名称")
+    season = Column(String(20), index=True, nullable=False, comment="赛季")
 
-# # class Match(Base):
-# #     """比赛模型"""
+    home = Column(String(100), index=True, nullable=False, comment="主队名称")
+    home_id = Column(String(50), index=True, nullable=False, comment="主队ID")
+    home_rank = Column(String(20), comment="主队排名")
+
+    away = Column(String(100), index=True, nullable=False, comment="客队名称")
+    away_id = Column(String(50), index=True, nullable=False, comment="客队ID")
+    away_rank = Column(String(20), comment="客队排名")
+
+    match_time = Column(Integer, index=True, nullable=False, comment="比赛时间（时间戳）")
+    match_state = Column(Integer, default=0, comment="比赛状态")
+    match_state_show = Column(String(20), comment="比赛状态文字")
+
+    def __repr__(self):
+        return f"<Match(match_id={self.match_id}, home={self.home}, away={self.away})>"

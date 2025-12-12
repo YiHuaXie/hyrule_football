@@ -3,7 +3,7 @@ from mcp.server.fastmcp import FastMCP
 from hyrule_football.schema import MatchInfo
 from hyrule_football.service import match_service
 from hyrule_football.utils import get_logger
-from hyrule_football.service.api_service import request_match_detail
+from hyrule_football.service.api_service import request_match_analysis
 
 logger = get_logger(__name__)
 
@@ -12,10 +12,10 @@ match_mcp = FastMCP("Match")
 match_mcp.settings.streamable_http_path = "/"
 
 
-@match_mcp.tool(description="比赛详细信息")
-def get_match_detail(match_id: str) -> dict:
+@match_mcp.tool(description="比赛分析信息")
+def request_match_analysis(match_id: str) -> dict:
     logger.info(f">>> [Tool] get_match_detail 被调用，入参：{match_id}")
-    return request_match_detail(match_id)
+    return request_match_analysis(match_id)
 
 
 @match_mcp.tool(description="查询所有比赛")

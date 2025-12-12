@@ -3,6 +3,7 @@ from hyrule_football.config import settings
 from hyrule_football.mcp.mcp_server import mcp_server, MCP_SERVER_PORT
 from hyrule_football.task import start_all_tasks
 from hyrule_football.lark_client import start_lark_client
+from hyrule_football.database import db_initialize
 from pathlib import Path
 import threading
 import uvicorn
@@ -11,6 +12,9 @@ import uvicorn
 def main():
     # 配置日志
     configure_root_logger(Path("logs") / settings.LOG_FILE)
+
+    # 初始化数据库
+    db_initialize()
 
     # 定时器任务
     start_all_tasks()

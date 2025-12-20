@@ -25,7 +25,7 @@ RUN pip install "poetry==$POETRY_VERSION"
 RUN poetry config virtualenvs.create false
 
 # 安装 ping 和 curl 命令
-RUN apt-get update && apt-get install -y iputils-ping curl
+RUN apt-get update && apt-get install -y iputils-ping curl nodejs
 
 # 复制项目文件
 COPY pyproject.toml README.md poetry.lock* /app/

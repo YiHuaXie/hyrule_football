@@ -9,6 +9,9 @@ from fastapi import FastAPI
 from hyrule_football.lark_client import start_lark_client
 from hyrule_football.utils import configure_root_logger
 from hyrule_football.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
 from hyrule_football.mcp.match_mcp import match_mcp
 from hyrule_football.mcp.odds_mcp import odds_mcp
 from hyrule_football.mcp.company_mcp import company_mcp
@@ -31,12 +34,12 @@ import hyrule_football.models
 # 创建组合的 lifespan 来管理两个 session manager 和数据库初始化
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🚀 初始化数据库...")
+    logger.info("🚀 初始化数据库...")
     try:
         await init_database()
-        print("✅ 数据库初始化成功")
+        logger.info("✅ 数据库初始化成功")
     except Exception as e:
-        print(f"❌ 数据库初始化失败: {e}", exc_info=True)
+        logger.error(f"❌ 数据库初始化失败: {e}", exc_info=True)
         raise e
 
     # 加载静态数据
@@ -56,7 +59,7 @@ async def lifespan(app: FastAPI):
         yield
 
     # 关闭时的清理工作（如果需要）
-    print("🛑 应用关闭")
+    logger.info("🛑 应用关闭")
 
 
 # 创建 FastAPI 应用并挂载两个 MCP 服务

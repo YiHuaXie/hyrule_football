@@ -16,7 +16,7 @@ services:
       - LOG_FILE=app.log
       - TZ=Asia/Shanghai
       - REDIS_DEFAULT_URL=redis://redis:6379/0
-      - MYSQL_DB_URL=mysql+asyncmy://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      - MYSQL_DB_URL=mysql+asyncmy://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
       # 混合部署：MCP Server 和主应用在同一容器，使用 localhost
       # - MCP_SERVER_URL=http://localhost:8001
     volumes:
@@ -58,7 +58,7 @@ services:
       TZ: Asia/Shanghai
 
     volumes:
-      - mysql-data:/var/lib/mysql  # 数据持久化
+      - mysql_data:/var/lib/mysql  # 数据持久化
 
     ports:
       - "${MYSQL_PORT:-3306}:3306"
@@ -66,7 +66,7 @@ services:
     networks:
       - host_network
 
-    healthcheck:
+    healthcheck: 
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
@@ -80,5 +80,5 @@ networks:
 volumes:
   redis_data:
     driver: local
-  mysql-data:
+  mysql_data:
     driver: local

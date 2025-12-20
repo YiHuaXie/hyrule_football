@@ -1,282 +1,282 @@
 [
   {
-    "cid": 220,
-    "cname": "Norway"
+    "id": 220,
+    "name": "Norway"
   },
   {
-    "cid": 221,
-    "cname": "Bookmaker.eu"
+    "id": 221,
+    "name": "Bookmaker.eu"
   },
   {
-    "cid": 39,
-    "cname": "matchbook"
+    "id": 39,
+    "name": "matchbook"
   },
   {
-    "cid": 47,
-    "cname": "Marathon"
+    "id": 47,
+    "name": "Marathon"
   },
   {
-    "cid": 176,
-    "cname": "Oddset"
+    "id": 176,
+    "name": "Oddset"
   },
   {
-    "cid": 184,
-    "cname": "Pinnacle"
+    "id": 184,
+    "name": "Pinnacle"
   },
   {
-    "cid": 190,
-    "cname": "Nike"
+    "id": 190,
+    "name": "Nike"
   },
   {
-    "cid": 203,
-    "cname": "novibet"
+    "id": 203,
+    "name": "novibet"
   },
   {
-    "cid": 204,
-    "cname": "PMU"
+    "id": 204,
+    "name": "PMU"
   },
   {
-    "cid": 208,
-    "cname": "Marathonbet"
+    "id": 208,
+    "name": "Marathonbet"
   },
   {
-    "cid": 209,
-    "cname": "Paddy Power"
+    "id": 209,
+    "name": "Paddy Power"
   },
   {
-    "cid": 212,
-    "cname": "OddsRing"
+    "id": 212,
+    "name": "OddsRing"
   },
   {
-    "cid": 217,
-    "cname": "OhmBet"
+    "id": 217,
+    "name": "OhmBet"
   },
   {
-    "cid": 31,
-    "cname": "Gamebookers"
+    "id": 31,
+    "name": "Gamebookers"
   },
   {
-    "cid": 41,
-    "cname": "Expekt"
+    "id": 41,
+    "name": "Expekt"
   },
   {
-    "cid": 171,
-    "cname": "Eurobet"
+    "id": 171,
+    "name": "Eurobet"
   },
   {
-    "cid": 189,
-    "cname": "Fonbet"
+    "id": 189,
+    "name": "Fonbet"
   },
   {
-    "cid": 198,
-    "cname": "Jetbull"
+    "id": 198,
+    "name": "Jetbull"
   },
   {
-    "cid": 199,
-    "cname": "e-stave"
+    "id": 199,
+    "name": "e-stave"
   },
   {
-    "cid": 207,
-    "cname": "Efbet"
+    "id": 207,
+    "name": "Efbet"
   },
   {
-    "cid": 32,
-    "cname": "必发"
+    "id": 32,
+    "name": "必发"
   },
   {
-    "cid": 205,
-    "cname": "youwin"
+    "id": 205,
+    "name": "youwin"
   },
   {
-    "cid": 213,
-    "cname": "winner"
+    "id": 213,
+    "name": "winner"
   },
   {
-    "cid": 214,
-    "cname": "VBet"
+    "id": 214,
+    "name": "VBet"
   },
   {
-    "cid": 218,
-    "cname": "Wellbet"
+    "id": 218,
+    "name": "Wellbet"
   },
   {
-    "cid": 1,
-    "cname": "伟德"
+    "id": 1,
+    "name": "伟德"
   },
   {
-    "cid": 14,
-    "cname": "立博"
+    "id": 14,
+    "name": "立博"
   },
   {
-    "cid": 17,
-    "cname": "易胜博"
+    "id": 17,
+    "name": "易胜博"
   },
   {
-    "cid": 26,
-    "cname": "威廉希尔"
+    "id": 26,
+    "name": "威廉希尔"
   },
   {
-    "cid": 46,
-    "cname": "香港马会"
+    "id": 46,
+    "name": "香港马会"
   },
   {
-    "cid": 52,
-    "cname": "金宝博"
+    "id": 52,
+    "name": "金宝博"
   },
   {
-    "cid": 56,
-    "cname": "优胜客"
+    "id": 56,
+    "name": "优胜客"
   },
   {
-    "cid": 74,
-    "cname": "利记"
+    "id": 74,
+    "name": "利记"
   },
   {
-    "cid": 82,
-    "cname": "乐天堂"
+    "id": 82,
+    "name": "乐天堂"
   },
   {
-    "cid": 87,
-    "cname": "明陞"
+    "id": 87,
+    "name": "明陞"
   },
   {
-    "cid": 90,
-    "cname": "澳门"
+    "id": 90,
+    "name": "澳门"
   },
   {
-    "cid": 103,
-    "cname": "盈禾"
+    "id": 103,
+    "name": "盈禾"
   },
   {
-    "cid": 112,
-    "cname": "皇冠"
+    "id": 112,
+    "name": "皇冠"
   },
   {
-    "cid": 142,
-    "cname": "竞彩官方"
+    "id": 142,
+    "name": "竞彩官方"
   },
   {
-    "cid": 165,
-    "cname": "博天堂"
+    "id": 165,
+    "name": "博天堂"
   },
   {
-    "cid": 181,
-    "cname": "平博"
+    "id": 181,
+    "name": "平博"
   },
   {
-    "cid": 182,
-    "cname": "万博"
+    "id": 182,
+    "name": "万博"
   },
   {
-    "cid": 19,
-    "cname": "Coral"
+    "id": 19,
+    "name": "Coral"
   },
   {
-    "cid": 38,
-    "cname": "Bet365"
+    "id": 38,
+    "name": "Bet365"
   },
   {
-    "cid": 64,
-    "cname": "bwin"
+    "id": 64,
+    "name": "bwin"
   },
   {
-    "cid": 192,
-    "cname": "Betfred"
+    "id": 192,
+    "name": "Betfred"
   },
   {
-    "cid": 194,
-    "cname": "Bet-at-home"
+    "id": 194,
+    "name": "Bet-at-home"
   },
   {
-    "cid": 195,
-    "cname": "Boylesports"
+    "id": 195,
+    "name": "Boylesports"
   },
   {
-    "cid": 196,
-    "cname": "Betway"
+    "id": 196,
+    "name": "Betway"
   },
   {
-    "cid": 206,
-    "cname": "Dafabet"
+    "id": 206,
+    "name": "Dafabet"
   },
   {
-    "cid": 210,
-    "cname": "ComeOn"
+    "id": 210,
+    "name": "ComeOn"
   },
   {
-    "cid": 211,
-    "cname": "Betflag"
+    "id": 211,
+    "name": "Betflag"
   },
   {
-    "cid": 216,
-    "cname": "Bethard"
+    "id": 216,
+    "name": "Bethard"
   },
   {
-    "cid": 68,
-    "cname": "IBCBET"
+    "id": 68,
+    "name": "IBCBET"
   },
   {
-    "cid": 77,
-    "cname": "Interwetten"
+    "id": 77,
+    "name": "Interwetten"
   },
   {
-    "cid": 180,
-    "cname": "Iceland"
+    "id": 180,
+    "name": "Iceland"
   },
   {
-    "cid": 20,
-    "cname": "SNAI"
+    "id": 20,
+    "name": "SNAI"
   },
   {
-    "cid": 185,
-    "cname": "Tote"
+    "id": 185,
+    "name": "Tote"
   },
   {
-    "cid": 187,
-    "cname": "STS"
+    "id": 187,
+    "name": "STS"
   },
   {
-    "cid": 188,
-    "cname": "Sazka"
+    "id": 188,
+    "name": "Sazka"
   },
   {
-    "cid": 191,
-    "cname": "StarPrice"
+    "id": 191,
+    "name": "StarPrice"
   },
   {
-    "cid": 193,
-    "cname": "skybet"
+    "id": 193,
+    "name": "skybet"
   },
   {
-    "cid": 197,
-    "cname": "Tipico"
+    "id": 197,
+    "name": "Tipico"
   },
   {
-    "cid": 202,
-    "cname": "Titanbet"
+    "id": 202,
+    "name": "Titanbet"
   },
   {
-    "cid": 28,
-    "cname": "10BET"
+    "id": 28,
+    "name": "10BET"
   },
   {
-    "cid": 200,
-    "cname": "888Sport"
+    "id": 200,
+    "name": "888Sport"
   },
   {
-    "cid": 215,
-    "cname": "1xBet"
+    "id": 215,
+    "name": "1xBet"
   },
   {
-    "cid": 219,
-    "cname": "22Bet"
+    "id": 219,
+    "name": "22Bet"
   },
   {
-    "cid": 25,
-    "cname": "12BET"
+    "id": 25,
+    "name": "12BET"
   },
   {
-    "cid": 54,
-    "cname": "18Bet"
+    "id": 54,
+    "name": "18Bet"
   }
 ]

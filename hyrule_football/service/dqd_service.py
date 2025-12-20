@@ -122,11 +122,10 @@ def request_team_detail(team_id: str) -> dict:
     return data if isinstance(data, dict) else {}
 
 
-def request_league_data():
-    # https://www.dongqiudi.com/data
+def request_league_data() -> List[dict]:
+    """请求懂球帝的联赛列表"""
     data = _request_page_data("data")
-    return data.get("tabList", [])
-    # return data if isinstance(data, dict) else {}
+    return data.get("tabList", []) if isinstance(data, dict) else []
 
 
 def request_app_daily_match_list():

@@ -9,6 +9,7 @@ MCP_SERVER_URL = settings.MCP_SERVER_URL
 class MCPEndpoint(Enum):
     """MCP服务端点枚举"""
 
+    COMPANY = "/mcp/company"
     MATCH = "/mcp/match"
     ODDS = "/mcp/odds"
 

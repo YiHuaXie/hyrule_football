@@ -1,4 +1,4 @@
-from hyrule_football.schema import EuroOdds
+from hyrule_football.schemas import EuroOdds
 
 
 def test_euro_odds():

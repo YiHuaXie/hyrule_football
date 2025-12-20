@@ -5,8 +5,10 @@ services:
     container_name: hyrule_football_app
     restart: always
     depends_on:
-      - redis
-      # - mcp_server
+      redis:
+        condition: service_started
+      mysql:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -14,6 +16,7 @@ services:
       - LOG_FILE=app.log
       - TZ=Asia/Shanghai
       - REDIS_DEFAULT_URL=redis://redis:6379/0
+      - MYSQL_DB_URL=mysql+asyncmy://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
       # 混合部署：MCP Server 和主应用在同一容器，使用 localhost
       # - MCP_SERVER_URL=http://localhost:8001
     volumes:
@@ -42,11 +45,40 @@ services:
       --appendonly yes
       --appendfsync everysec
       --save "300 1"
+  mysql:
+    image: mysql:8.0
+    container_name: hyrule_football_db
+    restart: unless-stopped
 
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      TZ: Asia/Shanghai
+
+    volumes:
+      - mysql-data:/var/lib/mysql  # 数据持久化
+
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+
+    networks:
+      - host_network
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+      
 networks:
   host_network:
     driver: bridge
 
 volumes:
   redis_data:
+    driver: local
+  mysql-data:
     driver: local

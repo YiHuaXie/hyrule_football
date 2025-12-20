@@ -5,5 +5,6 @@ mcp_client = MultiServerMCPClient(
     {
         "match": MCPEndpoint.MATCH.server_config,
         "odds": MCPEndpoint.ODDS.server_config,
+        "company": MCPEndpoint.COMPANY.server_config,
     }
 )

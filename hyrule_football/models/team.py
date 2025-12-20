@@ -1,10 +1,4 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    DateTime,
-)
-
+from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime, timezone
 from hyrule_football.database import Base
 
@@ -36,4 +30,4 @@ class Team(Base):
     )
 
     # 表级约束
-    __table_args__ = ({"comment": "球队表"},)
+    __table_args__ = {"comment": "球队表"}

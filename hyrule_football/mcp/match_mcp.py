@@ -1,9 +1,9 @@
 from typing import List
 from mcp.server.fastmcp import FastMCP
-from hyrule_football.schema import MatchInfo
+from hyrule_football.schemas import MatchBase
 from hyrule_football.service import match_service
 from hyrule_football.utils import get_logger
-from hyrule_football.service.api_service import request_match_analysis
+import hyrule_football.service.oh_service as oh
 
 logger = get_logger(__name__)
 
@@ -15,13 +15,21 @@ match_mcp.settings.streamable_http_path = "/"
 @match_mcp.tool(description="比赛分析信息")
 def request_match_analysis(match_id: str) -> dict:
     logger.info(f">>> [Tool] get_match_detail 被调用，入参：{match_id}")
-    return request_match_analysis(match_id)
+    return oh.request_match_analysis(match_id)
 
 
 @match_mcp.tool(description="查询所有比赛")
 def get_match_list() -> List[dict]:
     logger.info(">>> [Tool] get_match_list 被调用")
     matches = match_service.get_daily_match_list()
+    return [m.model_dump() for m in matches]
+
+
+@match_mcp.tool(description="查询某个联赛的所有比赛")
+def get_match_list_by_league(league_name: str) -> List[dict]:
+    logger.info(">>> [Tool] get_match_list_by_league 被调用")
+    matches = match_service.get_daily_match_list()
+    matches = [m for m in matches if m.league == league_name]
     return [m.model_dump() for m in matches]
 
 
@@ -42,7 +50,7 @@ def get_match_for_matchup(team_a: str, team_b: str) -> dict:
     result = match_service.get_fixed_daily_matches(team_a, team_b)
     if isinstance(result, list):
         return result[0].model_dump()
-    if isinstance(result, MatchInfo):
+    if isinstance(result, MatchBase):
         return result.model_dump()
 
     return {}

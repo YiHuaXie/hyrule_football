@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from hyrule_football.models.league import League
 from typing import List, Optional
 
@@ -9,53 +10,54 @@ class LeagueRepo:
     # ========== 基础 CRUD 操作 ==========
 
     @staticmethod
-    def get_by_id(db: Session, league_id: int) -> Optional[League]:
+    async def get_by_id(db: AsyncSession, league_id: int) -> Optional[League]:
         """根据 ID 获取联赛"""
-        return db.query(League).filter_by(id=league_id).first()
+        result = await db.execute(select(League).filter_by(id=league_id))
+        return result.scalar_one_or_none()
 
     @staticmethod
-    def get_by_name(db: Session, name: str) -> Optional[League]:
+    async def get_by_name(db: AsyncSession, name: str) -> Optional[League]:
         """根据名称获取联赛"""
-        return db.query(League).filter_by(name=name).first()
+        result = await db.execute(select(League).filter_by(name=name))
+        return result.scalar_one_or_none()
 
     @staticmethod
-    def get_by_oh_id(db: Session, oh_id: str) -> Optional[League]:
-        """根据欧核ID获取联赛"""
-        return db.query(League).filter_by(oh_id=oh_id).first()
+    async def get_by_oh_id(db: AsyncSession, oh_id: str) -> Optional[League]:
+        """根据欧核 ID 获取联赛"""
+        result = await db.execute(select(League).filter_by(oh_id=oh_id))
+        return result.scalar_one_or_none()
 
     @staticmethod
-    def get_by_dqd_id(db: Session, dqd_id: str) -> Optional[League]:
-        """根据懂球帝ID获取联赛"""
-        return db.query(League).filter_by(dqd_id=dqd_id).first()
-
-    @staticmethod
-    def create(
-        db: Session,
+    async def create_or_update(
+        db: AsyncSession,
         name: str,
         oh_id: str = None,
         dqd_id: str = None,
         is_cup: int = 0,
     ) -> League:
-        """
-        创建联赛（如果 name 已存在则返回现有记录）
+        """创建或更新联赛"""
+        result = await db.execute(select(League).filter_by(name=name))
+        existing = result.scalar_one_or_none()
 
-        Args:
-            name: 联赛标准名称
-            oh_id: 欧核联赛ID
-            dqd_id: 懂球帝联赛ID
-            is_cup: 是否为杯赛（0: 否, 1: 是）
-        """
-        existing = db.query(League).filter_by(name=name).first()
         if existing:
+            # 更新已存在的记录
+            if oh_id is not None:
+                existing.oh_id = oh_id
+            if dqd_id is not None:
+                existing.dqd_id = dqd_id
+            if is_cup is not None:
+                existing.is_cup = is_cup
+            await db.flush()
             return existing
 
+        # 创建新记录
         league = League(name=name, oh_id=oh_id, dqd_id=dqd_id, is_cup=is_cup)
         db.add(league)
-        db.flush()
+        await db.flush()
         return league
 
     @staticmethod
-    def update(db: Session, league_id: int, **kwargs) -> Optional[League]:
+    async def update(db: AsyncSession, league_id: int, **kwargs) -> Optional[League]:
         """
         更新联赛信息
 
@@ -63,7 +65,8 @@ class LeagueRepo:
             league_id: 联赛ID
             **kwargs: 要更新的字段（name, oh_id, dqd_id, is_cup）
         """
-        league = db.query(League).filter_by(id=league_id).first()
+        result = await db.execute(select(League).filter_by(id=league_id))
+        league = result.scalar_one_or_none()
         if not league:
             return None
 
@@ -71,70 +74,57 @@ class LeagueRepo:
             if hasattr(league, key):
                 setattr(league, key, value)
 
-        db.flush()
+        await db.flush()
         return league
 
     @staticmethod
-    def update_oh_id(db: Session, league_id: int, oh_id: str) -> Optional[League]:
-        """更新欧核ID"""
-        league = db.query(League).filter_by(id=league_id).first()
-        if not league:
-            return None
-
-        league.oh_id = oh_id
-        db.flush()
-        return league
-
-    @staticmethod
-    def update_dqd_id(db: Session, league_id: int, dqd_id: str) -> Optional[League]:
-        """更新懂球帝ID"""
-        league = db.query(League).filter_by(id=league_id).first()
-        if not league:
-            return None
-
-        league.dqd_id = dqd_id
-        db.flush()
-        return league
-
-    @staticmethod
-    def delete(db: Session, league_id: int) -> bool:
+    async def delete(db: AsyncSession, league_id: int) -> bool:
         """删除联赛"""
-        league = db.query(League).filter_by(id=league_id).first()
+        result = await db.execute(select(League).filter_by(id=league_id))
+        league = result.scalar_one_or_none()
         if not league:
             return False
 
         db.delete(league)
-        db.flush()
+        await db.flush()
         return True
 
     # ========== 查询操作 ==========
 
     @staticmethod
-    def get_all_cups(db: Session) -> List[League]:
+    async def get_all_cups(db: AsyncSession) -> List[League]:
         """获取所有杯赛"""
-        return db.query(League).filter_by(is_cup=1).all()
+        result = await db.execute(select(League).filter_by(is_cup=1))
+        return list(result.scalars().all())
 
     @staticmethod
-    def get_all_leagues(db: Session) -> List[League]:
+    async def get_all_leagues(db: AsyncSession) -> List[League]:
         """获取所有联赛（非杯赛）"""
-        return db.query(League).filter_by(is_cup=0).all()
+        result = await db.execute(select(League).filter_by(is_cup=0))
+        return list(result.scalars().all())
 
     @staticmethod
-    def get_leagues_with_oh(db: Session) -> List[League]:
+    async def get_leagues_with_oh(db: AsyncSession) -> List[League]:
         """获取所有有欧核数据的联赛"""
-        return db.query(League).filter(League.oh_id.isnot(None)).all()
+        result = await db.execute(select(League).filter(League.oh_id.isnot(None)))
+        return list(result.scalars().all())
 
     @staticmethod
-    def get_leagues_with_dqd(db: Session) -> List[League]:
+    async def get_leagues_with_dqd(db: AsyncSession) -> List[League]:
         """获取所有有懂球帝数据的联赛"""
-        return db.query(League).filter(League.dqd_id.isnot(None)).all()
+        result = await db.execute(select(League).filter(League.dqd_id.isnot(None)))
+        return list(result.scalars().all())
 
     @staticmethod
-    def get_leagues_with_both(db: Session) -> List[League]:
+    async def get_leagues_with_both(db: AsyncSession) -> List[League]:
         """获取所有同时有欧核和懂球帝数据的联赛"""
-        return db.query(League).filter(League.oh_id.isnot(None), League.dqd_id.isnot(None)).all()
+        result = await db.execute(
+            select(League).filter(League.oh_id.isnot(None), League.dqd_id.isnot(None))
+        )
+        return list(result.scalars().all())
 
     @staticmethod
-    def get_all(db: Session) -> List[League]:
+    async def get_all(db: AsyncSession) -> List[League]:
         """获取所有联赛"""
-        return db.query(League).all()
+        result = await db.execute(select(League))
+        return list(result.scalars().all())

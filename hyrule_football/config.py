@@ -25,6 +25,8 @@ class Settings(BaseSettings):
 
     SQLITE_DB_URL: str = "sqlite:///./hyrule_football_sqlite.db"
 
+    MYSQL_DB_URL: str = "mysql+asyncmy://root@localhost:3306/hyrule_football_db"
+
     MCP_SERVER_PORT: int = 8001
     MCP_SERVER_URL: str = "http://localhost:8001"  # 默认值，可通过环境变量覆盖
 

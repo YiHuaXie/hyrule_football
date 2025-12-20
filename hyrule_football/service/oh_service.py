@@ -151,7 +151,7 @@ def request_league_data() -> List[dict]:
     """获取联赛列表（展开所有大洲的联赛）"""
     try:
         continent_groups = _request_page_data("league-center") or []
-        print(continent_groups)
+        # print(continent_groups)
         # 展开所有大洲的联赛列表
         all_leagues = []
         for continent_group in continent_groups:

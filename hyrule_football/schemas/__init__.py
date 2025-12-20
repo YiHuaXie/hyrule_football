@@ -1,17 +1,19 @@
-from .company import Company
-from .match_base import MatchInfo, MatchModel, MatchMatcher, DQDMatchModel
+from .company import CompanyModel, CompanyBase
+from .match import MatchBase, MatchMatcher, DQDMatch
 from .odds_detail import OddsSummary, OddsPattern, MatchOddsDetail
-from .standard_odds import StandardOdds, EuroStandardOddsRange
+from .standard_odds import StandardOddsBase, StandardOddsEuroRange
 
 from .asia_odds import CombineAsiaOdds, AsiaOdds
 from .euro_odds import CombineEuroOdds, EuroOdds
 
 __all__ = [
-    "Company",
-    "MatchInfo",
-    "MatchModel",
+    "CompanyBase",
+    "CompanyModel",
+    "StandardOddsBase",
+    "StandardOddsEuroRange",
+    "MatchBase",
     "MatchMatcher",
-    "DQDMatchModel",
+    "DQDMatch",
     "EuroOdds",
     "CombineEuroOdds",
     "AsiaOdds",
@@ -19,6 +21,4 @@ __all__ = [
     "MatchOddsDetail",
     "OddsSummary",
     "OddsPattern",
-    "StandardOdds",
-    "EuroStandardOddsRange",
 ]

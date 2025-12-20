@@ -1,6 +1,6 @@
 from typing import List
 from mcp.server.fastmcp import FastMCP
-from hyrule_football.schema.company import fixed_company_list
+from hyrule_football.schemas.company import fixed_company_list
 from hyrule_football.store import daily_match_store
 from hyrule_football.service.odds_service import get_odds_for_match
 from hyrule_football.utils import get_logger
@@ -13,7 +13,7 @@ odds_mcp.settings.streamable_http_path = "/"
 
 
 @odds_mcp.tool(description="查询某场比赛的赔率数据")
-def get_odds_detail_for_match(
+async def get_odds_detail_for_match(
     match_id: str,
     company_names: List[str] = ["bet365", "威廉希尔"],
 ) -> dict:
@@ -23,8 +23,8 @@ def get_odds_detail_for_match(
         return {}
 
     company_list = fixed_company_list(company_names)
-    odds_info = get_odds_for_match(match_info, company_list)
-    return odds_info.model_dump()
+    odds_info = await get_odds_for_match(match_info, company_list)
+    return odds_info.model_dump() if odds_info else {}
 
 
 if __name__ == "__main__":

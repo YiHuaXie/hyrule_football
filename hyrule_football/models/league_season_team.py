@@ -21,7 +21,7 @@ class LeagueSeasonTeam(Base):
 
     league_id = Column(Integer, ForeignKey("league.id"), nullable=False, comment="联赛ID（外键）")
 
-    season = Column(String(20), nullable=False, comment="赛季，格式：2024-2025")
+    season = Column(String(20), nullable=False, comment="赛季，格式：2024-2025 or 2025")
 
     team_id = Column(Integer, ForeignKey("team.id"), nullable=False, comment="球队ID（外键）")
 

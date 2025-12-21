@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
-from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, DateTime, func
 from hyrule_football.database import Base
 
 
@@ -18,14 +17,14 @@ class Team(Base):
 
     created_at = Column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
         comment="创建时间（UTC）",
     )
 
     updated_at = Column(
         DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
+        server_onupdate=func.now(),
         comment="更新时间（UTC）",
     )
 

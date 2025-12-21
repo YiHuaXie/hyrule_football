@@ -70,11 +70,16 @@ def _request_page_data(path: str) -> dict | list | None:
         return None
 
 
+def request_league_data() -> List[dict]:
+    """请求懂球帝的联赛列表"""
+    data = _request_page_data("data")
+    return data.get("tabList", []) if isinstance(data, dict) else []
+
+
 def request_daily_match_list() -> List[dict]:
     """请求懂球帝的每日比赛列表"""
     data = _request_page_data("live/70")
     match_list_data = data.get("matchListData", {})
-    print()
 
     first_key = list(match_list_data.keys())[0]
     match_list = match_list_data[first_key]
@@ -120,12 +125,6 @@ def request_team_detail(team_id: str) -> dict:
     """请求懂球帝的球队详情"""
     data = _request_page_data(f"team/{team_id}")
     return data if isinstance(data, dict) else {}
-
-
-def request_league_data() -> List[dict]:
-    """请求懂球帝的联赛列表"""
-    data = _request_page_data("data")
-    return data.get("tabList", []) if isinstance(data, dict) else []
 
 
 def request_app_daily_match_list():

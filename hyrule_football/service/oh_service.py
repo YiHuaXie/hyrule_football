@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from typing import List
+from typing import List, Optional
 from hyrule_football.utils import get_logger
 import httpx
 from functools import wraps
@@ -117,6 +117,30 @@ def request_hot_match_list() -> List[dict]:
         return []
 
 
+def request_match_list(leagues: Optional[List[str]] = None, type: int = 1):
+    """
+    请求赛事列表
+        Args:
+            leagues: 联赛ID列表
+            type: 赛事状态 1: 即时 2: 已完赛
+    """
+
+    try:
+        params = {
+            "matchType": 1,
+            "page": 0,
+            "size": 10000,
+            "type": type,
+            "leagues": leagues,
+        }
+        print(params)
+        res = _post_request("web/matchLiveList", params=params)
+        return _deep_get(res, ["data", "list"], default=[])
+    except Exception as e:
+        logger.error(f"❌ 获取赛事列表失败：{e}")
+        return []
+
+
 def request_daily_match_list():
     try:
         params = {"matchType": 1, "page": 0, "size": 10000, "type": 1}
@@ -178,8 +202,6 @@ def request_league_detail(league_id: str) -> dict:
     except Exception as e:
         logger.error(f"❌ 获取联赛列表失败：{e}")
         return []
-
-    _request_page_data(f"league-center/detail?leagueId={league_id}")
 
 
 def request_match_detail(match_id: str) -> dict:

@@ -149,6 +149,7 @@ class MatchMatcher:
         if dqd.start_play != self.match.match_time:
             return False
 
+        # 判断两场比赛的球队是否匹配，并识别哪个是主场
         matched, home_team = TeamMatcher().is_match(
             self.match.home,
             self.match.away,

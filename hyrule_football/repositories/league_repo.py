@@ -22,7 +22,7 @@ class LeagueRepo:
         return result.scalar_one_or_none()
 
     @staticmethod
-    async def get_by_oh_id(db: AsyncSession, oh_id: str) -> Optional[League]:
+    async def get_by_oh_id(db: AsyncSession, oh_id: int) -> Optional[League]:
         """根据欧核 ID 获取联赛"""
         result = await db.execute(select(League).filter_by(oh_id=oh_id))
         return result.scalar_one_or_none()
@@ -31,8 +31,8 @@ class LeagueRepo:
     async def create_or_update(
         db: AsyncSession,
         name: str,
-        oh_id: str = None,
-        dqd_id: str = None,
+        oh_id: int,
+        dqd_id: Optional[int] = None,
         is_cup: int = 0,
     ) -> League:
         """创建或更新联赛"""
@@ -98,29 +98,23 @@ class LeagueRepo:
         return list(result.scalars().all())
 
     @staticmethod
-    async def get_all_leagues(db: AsyncSession) -> List[League]:
-        """获取所有联赛（非杯赛）"""
-        result = await db.execute(select(League).filter_by(is_cup=0))
+    async def get_leagues_with_both(db: AsyncSession) -> List[League]:
+        """获取所有同时有欧核和懂球帝数据的联赛"""
+        result = await db.execute(
+            select(League).filter(League.oh_id.isnot(None), League.dqd_id.isnot(None))
+        )
         return list(result.scalars().all())
 
     @staticmethod
-    async def get_leagues_with_oh(db: AsyncSession) -> List[League]:
-        """获取所有有欧核数据的联赛"""
-        result = await db.execute(select(League).filter(League.oh_id.isnot(None)))
+    async def get_leagues_with_missing_dqd(db: AsyncSession) -> List[League]:
+        """获取所有没有懂球帝数据的联赛"""
+        result = await db.execute(select(League).filter(League.dqd_id.is_(None)))
         return list(result.scalars().all())
 
     @staticmethod
     async def get_leagues_with_dqd(db: AsyncSession) -> List[League]:
         """获取所有有懂球帝数据的联赛"""
         result = await db.execute(select(League).filter(League.dqd_id.isnot(None)))
-        return list(result.scalars().all())
-
-    @staticmethod
-    async def get_leagues_with_both(db: AsyncSession) -> List[League]:
-        """获取所有同时有欧核和懂球帝数据的联赛"""
-        result = await db.execute(
-            select(League).filter(League.oh_id.isnot(None), League.dqd_id.isnot(None))
-        )
         return list(result.scalars().all())
 
     @staticmethod

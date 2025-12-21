@@ -71,9 +71,11 @@ def get_daily_match_list() -> List[MatchBase]:
 async def sync_daily_match_list() -> List[MatchBase]:
     try:
         dqd_match_list = dqd.request_app_daily_match_list()
+        print(dqd_match_list[0])
         dqd_match_list = [DQDMatch(**m) for m in dqd_match_list]
 
         match_list = oh.request_daily_match_list()
+        print(match_list[0])
         valid_match_list = []
         async with db_async_session() as db:
             # 1. 过滤掉联赛不存在的比赛

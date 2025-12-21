@@ -28,14 +28,14 @@ class LeagueSeasonTeam(Base):
     created_at = Column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
-        comment="创建时间（UTC）",
+        comment="创建时间",
     )
 
     updated_at = Column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
-        comment="更新时间（UTC）",
+        comment="更新时间",
     )
 
     # 表级约束

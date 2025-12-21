@@ -7,25 +7,25 @@ class Team(Base):
 
     __tablename__ = "team"
 
-    id = Column(Integer, primary_key=True, autoincrement=True, comment="球队ID（自增）")
+    id = Column(Integer, primary_key=True, autoincrement=True, comment="球队ID")
 
-    name = Column(String(100), nullable=False, unique=True, comment="球队名称（唯一）")
+    name = Column(String(100), nullable=False, unique=True, comment="球队名称")
 
-    oh_id = Column(String(64), nullable=True, unique=True, comment="欧核球队ID（唯一，可为空）")
+    oh_id = Column(Integer, nullable=False, unique=True, comment="欧核球队ID")
 
-    dqd_id = Column(String(64), nullable=True, unique=True, comment="懂球帝球队ID（唯一，可为空）")
+    dqd_id = Column(String(64), nullable=True, unique=True, comment="懂球帝球队ID")
 
     created_at = Column(
         DateTime,
         server_default=func.now(),
-        comment="创建时间（UTC）",
+        comment="创建时间",
     )
 
     updated_at = Column(
         DateTime,
         server_default=func.now(),
         server_onupdate=func.now(),
-        comment="更新时间（UTC）",
+        comment="更新时间",
     )
 
     # 表级约束

@@ -18,7 +18,7 @@ class Match(Base):
     id = Column(Integer, primary_key=True, autoincrement=True, comment="主键ID")
 
     oh_match_id = Column(
-        String(64),
+        Integer,
         nullable=False,
         unique=True,
         index=True,
@@ -90,20 +90,15 @@ class Match(Base):
     created_at = Column(
         DateTime,
         server_default=func.now(),
-        comment="创建时间（UTC）",
+        comment="创建时间",
     )
 
     updated_at = Column(
         DateTime,
         server_default=func.now(),
         server_onupdate=func.now(),
-        comment="更新时间（UTC）",
+        comment="更新时间",
     )
-
-    # ========== 关系 ==========
-    # league_rel = relationship("League", back_populates="matches")
-    # home_team_rel = relationship("Team", foreign_keys=[home_id], back_populates="home_matches")
-    # away_team_rel = relationship("Team", foreign_keys=[away_id], back_populates="away_matches")
 
     # ========== 表级约束 ==========
     __table_args__ = (

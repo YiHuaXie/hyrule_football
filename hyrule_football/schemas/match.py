@@ -7,10 +7,10 @@ from hyrule_football.utils import match_league_name, TeamMatcher
 class MatchBase(BaseModel):
     """生成赛事信息模型"""
 
-    oh_league_id: str = Field(..., description="欧核联赛ID", alias="leagueId")
-    oh_match_id: str = Field(..., description="欧核比赛ID", alias="matchId")
-    oh_home_team_id: str = Field(..., description="欧核主队ID", alias="homeTeamId")
-    oh_away_team_id: str = Field(..., description="欧核客队ID", alias="awayTeamId")
+    oh_league_id: int = Field(..., description="欧核联赛ID", alias="leagueId")
+    oh_match_id: int = Field(..., description="欧核比赛ID", alias="matchId")
+    oh_home_team_id: int = Field(..., description="欧核主队ID", alias="homeTeamId")
+    oh_away_team_id: int = Field(..., description="欧核客队ID", alias="awayTeamId")
 
     dqd_match_id: Optional[str] = Field(default=None, description="懂球帝比赛ID")
     dqd_home_team_id: Optional[str] = Field(default=None, description="懂球帝主队ID")
@@ -61,19 +61,6 @@ class MatchBase(BaseModel):
     def match_description(self) -> str:
         """生成赛事介绍"""
         return f"{self.league}:{self.home} VS {self.away}"
-
-    @field_validator(
-        "oh_league_id",
-        "oh_match_id",
-        "oh_home_team_id",
-        "oh_away_team_id",
-        "dqd_match_id",
-        "dqd_home_team_id",
-        "dqd_away_team_id",
-        mode="before",
-    )
-    def to_string(cls, v):
-        return v if isinstance(v, str) else str(v)
 
     def to_db_dict(self, league_id: int, home_id: int, away_id: int) -> dict:
         """转换为数据库字典"""

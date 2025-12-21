@@ -76,45 +76,6 @@ def request_league_data() -> List[dict]:
     return data.get("tabList", []) if isinstance(data, dict) else []
 
 
-def request_daily_match_list() -> List[dict]:
-    """请求懂球帝的每日比赛列表"""
-    data = _request_page_data("live/70")
-    match_list_data = data.get("matchListData", {})
-
-    first_key = list(match_list_data.keys())[0]
-    match_list = match_list_data[first_key]
-    print("第一组数据：")
-    print(json.dumps(match_list, indent=4, ensure_ascii=False))
-
-    keep_keys = [
-        "match_id",
-        "team_A_id",
-        "team_A_name",
-        "team_B_id",
-        "team_B_name",
-        "competition_name",
-        "competition_id",
-        "date_utc",
-        "time_utc",
-        "start_play",
-    ]
-
-    result = {}
-    for date, match_list in match_list_data.items():
-        new_match_list = []
-        for match in match_list:
-            if match.get("relate_type") != "match":
-                continue
-            new_match = {}
-            for k in keep_keys:
-                if k in match:
-                    new_match[k] = match[k]
-            new_match_list.append(new_match)
-
-        result[date] = new_match_list
-    return result
-
-
 def request_match_analysis(match_id: str) -> dict:
     """请求懂球帝的比赛详情"""
     data = _request_page_data(f"liveDetail/{match_id}")
@@ -127,7 +88,7 @@ def request_team_detail(team_id: str) -> dict:
     return data if isinstance(data, dict) else {}
 
 
-def request_app_daily_match_list():
+def request_daily_match_list():
 
     result = httpx.get(
         "https://sport-data-magicball.dongdianqiu.com/v1/list/match_list?isTeenager=0&platform=ios&theme=dark&language=zh-CN&version=845&timezone=GMT%2B8&cmp_type=soccer&tab_type=all"

@@ -107,13 +107,18 @@ def _deep_get(d, keys, default=None):
     return d
 
 
-def request_hot_match_list() -> List[dict]:
+def request_league_data() -> List[dict]:
+    """获取联赛列表（展开所有大洲的联赛）"""
     try:
-        page_data = _request_page_data("/")
-        match_list = page_data.get("hotMatchList", [])
-        return match_list
+        continent_groups = _request_page_data("league-center") or []
+        all_leagues = []
+        for continent_group in continent_groups:
+            league_list = continent_group.get("leagueList", [])
+            all_leagues.extend(league_list)
+
+        return all_leagues
     except Exception as e:
-        logger.error(f"❌ 获取热门赛事失败：{e}")
+        logger.error(f"❌ 获取欧核联赛列表失败：{e}")
         return []
 
 
@@ -133,11 +138,10 @@ def request_match_list(leagues: Optional[List[str]] = None, type: int = 1):
             "type": type,
             "leagues": leagues,
         }
-        print(params)
         res = _post_request("web/matchLiveList", params=params)
         return _deep_get(res, ["data", "list"], default=[])
     except Exception as e:
-        logger.error(f"❌ 获取赛事列表失败：{e}")
+        logger.error(f"❌ 获取欧核赛事列表失败：{e}")
         return []
 
 
@@ -169,23 +173,6 @@ def request_asia_odds_detail(match_id: str) -> dict:
     except Exception as e:
         logger.error(f"❌ 获取亚盘数据失败：{e}")
         return {}
-
-
-def request_league_data() -> List[dict]:
-    """获取联赛列表（展开所有大洲的联赛）"""
-    try:
-        continent_groups = _request_page_data("league-center") or []
-        # print(continent_groups)
-        # 展开所有大洲的联赛列表
-        all_leagues = []
-        for continent_group in continent_groups:
-            league_list = continent_group.get("leagueList", [])
-            all_leagues.extend(league_list)
-
-        return all_leagues
-    except Exception as e:
-        logger.error(f"❌ 获取联赛列表失败：{e}")
-        return []
 
 
 def request_league_detail(league_id: str) -> dict:

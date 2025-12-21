@@ -1,4 +1,4 @@
-from .company import CompanyModel, CompanyBase
+from .company import CompanyBase, CompanyBase
 from .match import MatchBase, MatchMatcher, DQDMatch
 from .odds_detail import OddsSummary, OddsPattern, MatchOddsDetail
 from .standard_odds import StandardOddsBase, StandardOddsEuroRange
@@ -8,7 +8,7 @@ from .euro_odds import CombineEuroOdds, EuroOdds
 
 __all__ = [
     "CompanyBase",
-    "CompanyModel",
+    "CompanyBase",
     "StandardOddsBase",
     "StandardOddsEuroRange",
     "MatchBase",

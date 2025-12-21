@@ -16,15 +16,9 @@ class MatchRepo:
         return result.scalar_one_or_none()
 
     @staticmethod
-    async def get_by_oh_match_id(db: AsyncSession, oh_match_id: str) -> Optional[Match]:
+    async def get_by_oh_match_id(db: AsyncSession, oh_match_id: int) -> Optional[Match]:
         """根据欧核比赛 ID 获取比赛"""
         result = await db.execute(select(Match).filter_by(oh_match_id=oh_match_id))
-        return result.scalar_one_or_none()
-
-    @staticmethod
-    async def get_by_dqd_match_id(db: AsyncSession, dqd_match_id: str) -> Optional[Match]:
-        """根据懂球帝比赛 ID 获取比赛"""
-        result = await db.execute(select(Match).filter_by(dqd_match_id=dqd_match_id))
         return result.scalar_one_or_none()
 
     @staticmethod
@@ -103,89 +97,89 @@ class MatchRepo:
 
     # ========== 查询操作 ==========
 
-    @staticmethod
-    async def get_by_league(db: AsyncSession, league_id: int, limit: int = 100) -> List[Match]:
-        """获取某联赛的比赛列表"""
-        result = await db.execute(
-            select(Match)
-            .filter_by(league_id=league_id)
-            .order_by(Match.match_time.desc())
-            .limit(limit)
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_by_league(db: AsyncSession, league_id: int, limit: int = 100) -> List[Match]:
+    #     """获取某联赛的比赛列表"""
+    #     result = await db.execute(
+    #         select(Match)
+    #         .filter_by(league_id=league_id)
+    #         .order_by(Match.match_time.desc())
+    #         .limit(limit)
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_by_league_and_season(
-        db: AsyncSession, league_id: int, season: str, limit: int = 1000
-    ) -> List[Match]:
-        """获取某联赛某赛季的比赛列表"""
-        result = await db.execute(
-            select(Match)
-            .filter_by(league_id=league_id, season=season)
-            .order_by(Match.match_time.desc())
-            .limit(limit)
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_by_league_and_season(
+    #     db: AsyncSession, league_id: int, season: str, limit: int = 1000
+    # ) -> List[Match]:
+    #     """获取某联赛某赛季的比赛列表"""
+    #     result = await db.execute(
+    #         select(Match)
+    #         .filter_by(league_id=league_id, season=season)
+    #         .order_by(Match.match_time.desc())
+    #         .limit(limit)
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_by_team(db: AsyncSession, team_id: int, limit: int = 100) -> List[Match]:
-        """获取某球队的比赛列表（主场或客场）"""
-        result = await db.execute(
-            select(Match)
-            .filter(or_(Match.home_id == team_id, Match.away_id == team_id))
-            .order_by(Match.match_time.desc())
-            .limit(limit)
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_by_team(db: AsyncSession, team_id: int, limit: int = 100) -> List[Match]:
+    #     """获取某球队的比赛列表（主场或客场）"""
+    #     result = await db.execute(
+    #         select(Match)
+    #         .filter(or_(Match.home_id == team_id, Match.away_id == team_id))
+    #         .order_by(Match.match_time.desc())
+    #         .limit(limit)
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_by_state(db: AsyncSession, match_state: int, limit: int = 100) -> List[Match]:
-        """获取某状态的比赛列表"""
-        result = await db.execute(
-            select(Match)
-            .filter_by(match_state=match_state)
-            .order_by(Match.match_time.desc())
-            .limit(limit)
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_by_state(db: AsyncSession, match_state: int, limit: int = 100) -> List[Match]:
+    #     """获取某状态的比赛列表"""
+    #     result = await db.execute(
+    #         select(Match)
+    #         .filter_by(match_state=match_state)
+    #         .order_by(Match.match_time.desc())
+    #         .limit(limit)
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_by_date(db: AsyncSession, date: str, limit: int = 1000) -> List[Match]:
-        """获取某日期的比赛列表（date 格式：YYYY-MM-DD）"""
-        result = await db.execute(
-            select(Match)
-            .filter(Match.match_time.like(f"{date}%"))
-            .order_by(Match.match_time.asc())
-            .limit(limit)
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_by_date(db: AsyncSession, date: str, limit: int = 1000) -> List[Match]:
+    #     """获取某日期的比赛列表（date 格式：YYYY-MM-DD）"""
+    #     result = await db.execute(
+    #         select(Match)
+    #         .filter(Match.match_time.like(f"{date}%"))
+    #         .order_by(Match.match_time.asc())
+    #         .limit(limit)
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_upcoming_matches(db: AsyncSession, limit: int = 100) -> List[Match]:
-        """获取未开赛的比赛列表"""
-        result = await db.execute(
-            select(Match).filter_by(match_state=0).order_by(Match.match_time.asc()).limit(limit)
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_upcoming_matches(db: AsyncSession, limit: int = 100) -> List[Match]:
+    #     """获取未开赛的比赛列表"""
+    #     result = await db.execute(
+    #         select(Match).filter_by(match_state=0).order_by(Match.match_time.asc()).limit(limit)
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_live_matches(db: AsyncSession) -> List[Match]:
-        """获取进行中的比赛列表"""
-        result = await db.execute(
-            select(Match).filter_by(match_state=1).order_by(Match.match_time.asc())
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_live_matches(db: AsyncSession) -> List[Match]:
+    #     """获取进行中的比赛列表"""
+    #     result = await db.execute(
+    #         select(Match).filter_by(match_state=1).order_by(Match.match_time.asc())
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_finished_matches(db: AsyncSession, limit: int = 100) -> List[Match]:
-        """获取已完赛的比赛列表"""
-        result = await db.execute(
-            select(Match).filter_by(match_state=2).order_by(Match.match_time.desc()).limit(limit)
-        )
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_finished_matches(db: AsyncSession, limit: int = 100) -> List[Match]:
+    #     """获取已完赛的比赛列表"""
+    #     result = await db.execute(
+    #         select(Match).filter_by(match_state=2).order_by(Match.match_time.desc()).limit(limit)
+    #     )
+    #     return list(result.scalars().all())
 
-    @staticmethod
-    async def get_all(db: AsyncSession, limit: int = 1000) -> List[Match]:
-        """获取所有比赛"""
-        result = await db.execute(select(Match).order_by(Match.match_time.desc()).limit(limit))
-        return list(result.scalars().all())
+    # @staticmethod
+    # async def get_all(db: AsyncSession, limit: int = 1000) -> List[Match]:
+    #     """获取所有比赛"""
+    #     result = await db.execute(select(Match).order_by(Match.match_time.desc()).limit(limit))
+    #     return list(result.scalars().all())

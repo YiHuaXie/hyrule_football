@@ -2,7 +2,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 from .match import MatchBase
-from .company import CompanyModel
+from .company import CompanyBase
 from .euro_odds import EuroOdds
 from .asia_odds import AsiaOdds
 
@@ -53,7 +53,7 @@ class MatchOddsDetail(BaseModel):
     match_base: Annotated[MatchBase, Field(..., description="赛事信息")]
 
     company_list: Annotated[
-        List[CompanyModel],
+        List[CompanyBase],
         Field(default_factory=list, description="博彩公司列表"),
     ]
 

@@ -70,12 +70,12 @@ def get_daily_match_list() -> List[MatchBase]:
 
 async def sync_daily_match_list() -> List[MatchBase]:
     try:
-        dqd_match_list = dqd.request_app_daily_match_list()
-        print(dqd_match_list[0])
+        dqd_match_list = dqd.request_daily_match_list()
+        # print(dqd_match_list[0])
         dqd_match_list = [DQDMatch(**m) for m in dqd_match_list]
 
         match_list = oh.request_daily_match_list()
-        print(match_list[0])
+        # print(match_list[0])
         valid_match_list = []
         async with db_async_session() as db:
             # 1. 过滤掉联赛不存在的比赛
@@ -86,21 +86,21 @@ async def sync_daily_match_list() -> List[MatchBase]:
                     continue
                 valid_match_list.append(match_base)
 
-            # 2. 合并懂球帝数据并保存到数据库
-            for vm in valid_match_list:
-                matcher = MatchMatcher(vm)
-                same_league_match_list = [
-                    dqd_m
-                    for dqd_m in dqd_match_list
-                    if dqd_m.competition_name in LEAGUE_ALIASES.get(vm.league, [])
-                ]
-                # 合并懂球帝数据
-                for dqd_m in same_league_match_list:
-                    if matcher.merge_dqd_match(dqd_m):
-                        break
+            # # 2. 合并懂球帝数据并保存到数据库
+            # for vm in valid_match_list:
+            #     matcher = MatchMatcher(vm)
+            #     same_league_match_list = [
+            #         dqd_m
+            #         for dqd_m in dqd_match_list
+            #         if dqd_m.competition_name in LEAGUE_ALIASES.get(vm.league, [])
+            #     ]
+            #     # 合并懂球帝数据
+            #     for dqd_m in same_league_match_list:
+            #         if matcher.merge_dqd_match(dqd_m):
+            #             break
 
-                # 保存到数据库
-                await sync_match_and_team_to_db(db, vm)
+            #     # 保存到数据库
+            #     await sync_match_and_team_to_db(db, vm)
 
         # 3.将有效赛事保存到 redis
         daily_match_store.save_matches(valid_match_list)

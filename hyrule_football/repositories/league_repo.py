@@ -32,7 +32,7 @@ class LeagueRepo:
         db: AsyncSession,
         name: str,
         oh_id: int,
-        dqd_id: Optional[int] = None,
+        dqd_id: Optional[str] = None,
         is_cup: int = 0,
     ) -> League:
         """创建或更新联赛"""

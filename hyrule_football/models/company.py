@@ -19,14 +19,14 @@ class Company(Base):
     created_at = Column(
         DateTime,
         server_default=func.now(),
-        comment="创建时间（UTC）",
+        comment="创建时间",
     )
 
     updated_at = Column(
         DateTime,
         server_default=func.now(),
         server_onupdate=func.now(),
-        comment="更新时间（UTC）",
+        comment="更新时间",
     )
 
     # 表级约束

@@ -24,10 +24,11 @@ dependencies = [
     "rapidfuzz (>=3.14.3,<4.0.0)",
     "asyncmy (>=0.2.10,<0.3.0)",
     "fastapi (>=0.125.0,<0.126.0)",
+    "websockets (>=15.0.1,<16.0.0)",
 ]
 
 [tool.black]
-line-length = 100
+line-length = 120
 target-version = ['py312']
 include = '\.pyi?$'
 

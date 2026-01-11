@@ -1,6 +1,6 @@
 from hyrule_football.database import db_async_session
-from hyrule_football.repositories.company_repo import CompanyRepo
-from hyrule_football.schemas import CompanyBase
+from hyrule_football.repositories.company_repo import CompanyRepoV2 as CompanyRepo
+from hyrule_football.schemas import CompanySchema
 from hyrule_football.utils import get_logger
 import json
 from pathlib import Path
@@ -18,13 +18,13 @@ async def load_company_data():
             data = json.load(f)
 
         async with db_async_session() as db:
-            result = await CompanyRepo.batch_create_or_update(db, data)
+            result = await CompanyRepo(db).batch_create_or_update(data)
             logger.info(f"✅ 已同步 {len(result)} 家博彩公司")
     except Exception as e:
         logger.error(f"❌ 同步博彩公司列表失败: {e}")
 
 
-async def get_company_by_name(name: str) -> Optional[CompanyBase]:
+async def get_company_by_name(name: str) -> Optional[CompanySchema]:
     name_map = {
         "bet365": "Bet365",
         "365": "Bet365",
@@ -36,8 +36,8 @@ async def get_company_by_name(name: str) -> Optional[CompanyBase]:
     name = name_map.get(name.lower(), name)
 
     async with db_async_session() as db:
-        db_company = await CompanyRepo.get_by_name(db, name)
+        db_company = await CompanyRepo(db).get_by_name(name)
         if db_company:
-            company = CompanyBase.model_validate(db_company)
+            company = CompanySchema.model_validate(db_company)
             return company
         return None

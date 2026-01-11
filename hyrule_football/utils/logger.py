@@ -126,3 +126,7 @@ def configure_root_logger(log_file: Optional[Path] = None):
         if log_file:
             file_handler = _get_file_handler(log_file, log_level, formatter)
             root.addHandler(file_handler)
+
+
+def error_msg(source: str, message: str, *, data: dict | None = None) -> dict:
+    return {"source": source, "message": message, "data": data}

@@ -23,7 +23,8 @@ def load_league_aliases() -> Dict[str, List[str]]:
 LEAGUE_ALIASES = load_league_aliases()
 
 
-def match_league_name(target_name: str) -> Optional[str]:
+def specific_league_name(target_name: str) -> Optional[str]:
+    """从别名映射表中匹配标准联赛名称，如果没有匹配到，说明是不支持的联赛，返回 None"""
     if not target_name:
         return None
 

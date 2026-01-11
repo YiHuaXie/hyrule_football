@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class CompanyBase(BaseModel):
+class CompanySchema(BaseModel):
     cid: int = Field(..., description="博彩公司ID", alias="id")
     cname: str = Field(..., description="博彩公司名称", alias="name")
 

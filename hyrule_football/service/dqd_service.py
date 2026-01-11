@@ -1,26 +1,31 @@
 import requests
-import json
 from bs4 import BeautifulSoup
 import execjs
 from urllib.parse import urljoin
-from typing import Any, Optional, List
-from hyrule_football.utils import get_logger
-import json
+from typing import List
+from hyrule_football.utils import get_logger, deep_get, error_msg
 import httpx
 
 
 logger = get_logger(__name__)
 
-DONG_QIU_DI_URL = "https://www.dongqiudi.com"
+# 8647 是中国的苏超并不是苏格兰超
+_DQD_LEAGUE_BLACK_LIST = ["8647"]
+# DONG_QIU_DI_URL = "https://www.dongqiudi.com"
 
+DQD_APP_MATCH_API_URL = "https://sport-data-magicball.dongdianqiu.com"
+DQD_HTML_URL = "https://www.dongqiudi.com"
 # DONG_QIU_DI_URL = "https://sport-data-magicball.dongdianqiu.com"
 
-HEADERS = {
+DQD_SPORT_DATA_API_BASE = "https://sport-data.dongqiudi.com/soccer/biz/data"
+
+
+HTML_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/142.0.0.0 Safari/537.36",
     "Accept-Language": "zh-CN,zh;q=0.9",
-    "Referer": DONG_QIU_DI_URL,
+    "Referer": DQD_HTML_URL,
 }
 
 APP_HEADERS = {
@@ -28,6 +33,16 @@ APP_HEADERS = {
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/142.0.0.0 Safari/537.36",
     "Accept-Language": "zh-CN,zh;q=0.9",
+}
+
+APP_COMMON_PARAMS = {
+    "isTeenager": 0,
+    "platform": "ios",
+    "theme": "dark",
+    "language": "zh-CN",
+    "version": 845,
+    "timezone": "GMT+8",
+    "cmp_type": "soccer",
 }
 
 
@@ -41,7 +56,9 @@ def _execute_js_iife(js_code: str) -> dict:
 
 def _request_page_data(path: str) -> dict | list | None:
     try:
-        response = requests.get(urljoin(DONG_QIU_DI_URL, path), timeout=5, headers=HEADERS)
+        final_url = urljoin(DQD_HTML_URL, path)
+        logger.info(f"Get HTML Text: {final_url}")
+        response = requests.get(final_url, timeout=5, headers=HTML_HEADERS)
         response.raise_for_status()
         html = response.text
         soup = BeautifulSoup(html, "html.parser")
@@ -70,10 +87,54 @@ def _request_page_data(path: str) -> dict | list | None:
         return None
 
 
-def request_league_data() -> List[dict]:
-    """请求懂球帝的联赛列表"""
-    data = _request_page_data("data")
-    return data.get("tabList", []) if isinstance(data, dict) else []
+def request_league_list() -> List[dict]:
+    """联赛列表"""
+    page_data = _request_page_data("data")
+    if not isinstance(page_data, dict):
+        return []
+
+    result = {}
+    for x in page_data.get("tabList", []):
+        cid = x.get("competition_id")
+        # 去重并过滤黑名单
+        if not cid or cid in _DQD_LEAGUE_BLACK_LIST:
+            continue
+        result[cid] = x
+
+    return list(result.values())
+
+
+def request_league_seasons(league_id: str) -> List[dict]:
+    """联赛赛季列表"""
+    try:
+        params = {"app": "dqd", "language": "zh-cn", "competition_id": league_id}
+        response = httpx.get(f"{DQD_SPORT_DATA_API_BASE}/seasons", params=params)
+        response.raise_for_status()
+        seasons = response.json() or []
+
+        return [
+            {
+                "id": s.get("season_id"),
+                "name": s.get("season_name"),
+            }
+            for s in seasons
+            if s.get("season_id") and s.get("season_name")
+        ]
+    except Exception as e:
+        logger.error(error_msg("request_league_seasons", e))
+        return []
+
+
+def request_team_points_rank_by_season(season_id: str) -> dict:
+    """球队积分榜"""
+    try:
+        params = {"app": "dqd", "lang": "zh-cn", "season_id": season_id}
+        response = httpx.get(f"{DQD_SPORT_DATA_API_BASE}/standing", params=params)
+        response.raise_for_status()
+        return response.json() or {}
+    except Exception as e:
+        logger.error(error_msg("request_team_points_rank_by_season", e))
+        return []
 
 
 def request_match_analysis(match_id: str) -> dict:
@@ -88,12 +149,48 @@ def request_team_detail(team_id: str) -> dict:
     return data if isinstance(data, dict) else {}
 
 
-def request_daily_match_list():
-
+def request_daily_match_list() -> List[dict]:
+    # https://sport-data.dongdianqiu.com
     result = httpx.get(
         "https://sport-data-magicball.dongdianqiu.com/v1/list/match_list?isTeenager=0&platform=ios&theme=dark&language=zh-CN&version=845&timezone=GMT%2B8&cmp_type=soccer&tab_type=all"
     )
     return result.json().get("data", {}).get("matches", [])
 
 
+def request_played_match_list(start_date: str) -> List[dict]:
+    try:
+        params = {
+            "tab_type": "played",
+            "start": start_date,
+            **APP_COMMON_PARAMS,
+        }
+        response = httpx.get(f"{DQD_APP_MATCH_API_URL}/v1/list/schedule_list", params=params)
+        response.raise_for_status()
+        return deep_get(response.json(), ["data", "matches"], default=[])
+    except Exception as e:
+        logger.error(f"❌ 获取懂球帝完赛列表失败：{e}")
+        return []
+
+
+def request_test():
+    print("test")
+    result = httpx.get("https://api.dongdianqiu.com/data/index?app=dqd&version=846&platform=iphone&type=zuqiu")
+    data = result.json()
+
+    return data
+    # import json
+
+    # print(json.dumps(data, indent=4, ensure_ascii=False))
+
+
+# request_test()
+
+
+#  https://api.dongdianqiu.com/v3/archive/app/tabs/getlists?id=253&platform=iphone&version=846"
+# "https://api.dongdianqiu.com/v3/archive/app/channel/feeds?type=team&id=50001042&version=846&platform=ios&isDarkMode=1&user_pay_type=8192&isView=0&device_type=ios&isTeenager=0&isDarkMode=1"
 # https://sport-data-magicball.dongdianqiu.com/v1/list/match_list?isTeenager=0&platform=ios&theme=dark&language=zh-CN&version=845&timezone=GMT%2B8&cmp_type=soccer&tab_type=all
+# 欧冠 24670
+# 联赛积分榜：https://sport-data.dongqiudi.com/soccer/biz/data/standing?app=dqd&lang=zh-cn&season_id=24596
+# 联赛赛程：https://sport-data.dongqiudi.com/soccer/biz/data/schedule?season_id=24596&app=dqd&language=zh-cn
+# 联赛赛程基于轮数：https://sport-data.dongqiudi.com/soccer/biz/data/schedule?season_id=24596&round_id=432736&gameweek=1&app=dqd
+# 联赛赛季列表：https://sport-data.dongqiudi.com/soccer/biz/data/seasons?competition_id=43&app=dqd&version=0&language=zh-cn

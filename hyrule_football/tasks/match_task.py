@@ -1,5 +1,5 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from hyrule_football.service.match_service import sync_daily_match_list
+from hyrule_football.service.match_sync_service import sync_daily_match_list
 from hyrule_football.utils import get_logger
 from hyrule_football.config import settings
 
@@ -12,23 +12,5 @@ def daily_match_task() -> None:
     # 创建异步调度器，同步使用 BackgroundScheduler
     scheduler = AsyncIOScheduler(timezone=settings.TZ)
     # 每 3 小时执行一次
-    scheduler.add_job(
-        sync_daily_match_list,
-        trigger="cron",
-        hour="0-23/3",
-        minute=0,
-    )
+    scheduler.add_job(sync_daily_match_list, trigger="cron", hour="0-23/3", minute=0)
     scheduler.start()
-
-
-#     test_scheduler = AsyncIOScheduler(timezone=settings.TZ)
-#     test_scheduler.add_job(
-#         test_method,
-#         trigger="interval",
-#         seconds=10,
-#     )
-#     test_scheduler.start()
-
-
-# async def test_method() -> None:
-#     logger.info("✅这是一个测试任务")

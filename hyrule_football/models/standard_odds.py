@@ -1,12 +1,4 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    DateTime,
-    JSON,
-    func,
-)
-
+from sqlalchemy import Column, Integer, String, DateTime, JSON, func
 from hyrule_football.database import Base
 
 
@@ -20,18 +12,9 @@ class StandardOdds(Base):
 
     data = Column(JSON, nullable=False, comment="赔率数据")
 
-    created_at = Column(
-        DateTime,
-        server_default=func.now(),
-        comment="创建时间",
-    )
+    created_at = Column(DateTime, server_default=func.now(), comment="创建时间")
 
-    updated_at = Column(
-        DateTime,
-        server_default=func.now(),
-        server_onupdate=func.now(),
-        comment="更新时间",
-    )
+    updated_at = Column(DateTime, server_default=func.now(), server_onupdate=func.now(), comment="更新时间")
 
     __table_args__ = ({"comment": "标准赔率表"},)
 

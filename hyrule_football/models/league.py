@@ -3,6 +3,7 @@ from sqlalchemy import (
     Integer,
     String,
     DateTime,
+    JSON,
     func,
 )
 
@@ -16,9 +17,15 @@ class League(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="联赛ID（自增）")
     name = Column(String(100), nullable=False, unique=True, comment="联赛名称")
-    oh_id = Column(Integer, nullable=False, unique=True, comment="欧核联赛ID")
-    dqd_id = Column(String(64), nullable=True, unique=True, comment="懂球帝联赛ID")
     is_cup = Column(Integer, default=0, comment="是否为杯赛：0=否，1=是")
+
+    oh_id = Column(Integer, nullable=False, unique=True, comment="oh 联赛ID")
+    oh_season = Column(JSON, nullable=True, comment="oh 当前赛季")
+    oh_seasons = Column(JSON, nullable=True, comment="oh 赛季列表")
+
+    dqd_id = Column(String(64), nullable=False, unique=True, comment="dqd 联赛ID")
+    dqd_season = Column(JSON, nullable=True, comment="dqd 当前赛季")
+    dqd_seasons = Column(JSON, nullable=True, comment="dqd 赛季列表")
 
     created_at = Column(
         DateTime,

@@ -1,9 +1,6 @@
 from typing import List, Optional
 from mcp.server.fastmcp import FastMCP
-from hyrule_football.repositories.company_repo import CompanyRepo
 from hyrule_football.utils import get_logger
-from hyrule_football.database import db_async_session
-
 import hyrule_football.service.company_service as company_service
 
 logger = get_logger(__name__)

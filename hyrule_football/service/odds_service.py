@@ -1,6 +1,6 @@
 from hyrule_football.schemas import (
     MatchBase,
-    CompanyBase,
+    CompanySchema,
     MatchOddsDetail,
     OddsSummary,
     OddsPattern,
@@ -20,7 +20,7 @@ logger = get_logger(__name__)
 
 async def get_odds_for_match(
     match_base: MatchBase,
-    company_list: List[CompanyBase],
+    company_list: List[CompanySchema],
 ) -> Optional[MatchOddsDetail]:
     """获取某场比赛的赔率数据"""
 

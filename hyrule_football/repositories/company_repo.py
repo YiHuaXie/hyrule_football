@@ -4,32 +4,28 @@ from typing import List, Optional, Dict
 from hyrule_football.models import Company
 
 
-class CompanyRepo:
+class CompanyRepoV2:
     """博彩公司数据访问层"""
 
-    @staticmethod
-    async def get_by_id(db: AsyncSession, company_id: int) -> Optional[Company]:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    async def get_by_id(self, company_id: int) -> Optional[Company]:
         """根据 ID 获取博彩公司"""
-        result = await db.execute(select(Company).filter_by(id=company_id))
+        result = await self.db.execute(select(Company).filter_by(id=company_id))
         return result.scalar_one_or_none()
 
-    @staticmethod
-    async def get_by_name(db: AsyncSession, name: str) -> Optional[Company]:
+    async def get_by_name(self, name: str) -> Optional[Company]:
         """根据名称获取博彩公司"""
-        result = await db.execute(select(Company).filter_by(name=name))
+        result = await self.db.execute(select(Company).filter_by(name=name))
         return result.scalar_one_or_none()
 
-    @staticmethod
-    async def get_all(db: AsyncSession) -> List[Company]:
+    async def get_all(self) -> List[Company]:
         """获取所有博彩公司"""
-        result = await db.execute(select(Company))
+        result = await self.db.execute(select(Company))
         return list(result.scalars().all())
 
-    @staticmethod
-    async def batch_create_or_update(
-        db: AsyncSession,
-        company_list: List[Dict[str, any]],
-    ) -> List[Company]:
+    async def batch_create_or_update(self, company_list: List[dict]) -> List[Company]:
         """批量创建或者更新博彩公司"""
         result = []
 
@@ -41,7 +37,7 @@ class CompanyRepo:
                 continue
 
             # 异步查询现有记录
-            existing = await CompanyRepo.get_by_id(db, company_id)
+            existing = await self.get_by_id(company_id)
 
             if existing:
                 # 更新现有记录
@@ -51,8 +47,8 @@ class CompanyRepo:
             else:
                 # 创建新记录
                 company = Company(id=company_id, name=company_name)
-                db.add(company)
+                self.db.add(company)
                 result.append(company)
 
-        await db.flush()
+        await self.db.flush()
         return result

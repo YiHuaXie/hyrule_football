@@ -8,19 +8,9 @@ class Company(Base):
 
     id = Column(Integer, primary_key=True, comment="博彩公司ID")
 
-    name = Column(
-        String(100),
-        nullable=False,
-        index=True,
-        unique=True,
-        comment="博彩公司名称",
-    )
+    name = Column(String(100), nullable=False, index=True, unique=True, comment="博彩公司名称")
 
-    created_at = Column(
-        DateTime,
-        server_default=func.now(),
-        comment="创建时间",
-    )
+    created_at = Column(DateTime, server_default=func.now(), comment="创建时间")
 
     updated_at = Column(
         DateTime,

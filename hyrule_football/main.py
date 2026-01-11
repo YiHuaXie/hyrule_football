@@ -12,17 +12,17 @@ from hyrule_football.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
-from hyrule_football.mcp.match_mcp import match_mcp
-from hyrule_football.mcp.odds_mcp import odds_mcp
+# from hyrule_football.mcp.match_mcp import match_mcp
+# from hyrule_football.mcp.odds_mcp import odds_mcp
 from hyrule_football.mcp.company_mcp import company_mcp
 from hyrule_football.mcp.mcp_util import MCPEndpoint, MCP_SERVER_PORT
 from hyrule_football.database import init_database
 from hyrule_football.task import start_all_tasks
 
+import hyrule_football.jobs.sync_league as sync_league
 import hyrule_football.service.company_service as company_service
 import hyrule_football.service.standard_odds_service as standard_odds_service
-import hyrule_football.service.league_service as league_service
-import hyrule_football.service.match_service as match_service
+from hyrule_football.service.match_sync_service import sync_daily_match_list
 
 # 导入所有模型，确保它们注册到 Base
 import hyrule_football.models
@@ -44,17 +44,18 @@ async def lifespan(app: FastAPI):
 
     # 加载静态数据
     await company_service.load_company_data()
-    await standard_odds_service.load_standard_odds_data()
-    await league_service.sync_league_data()
-    await match_service.sync_daily_match_list()
+    # await standard_odds_service.load_standard_odds_data()
+    await sync_league.sync_all_leagues()
+    await sync_league.sync_league_seasons()
+    # await sync_daily_match_list()
 
     # 启动定时任务（在数据库初始化之后）
-    await start_all_tasks()
+    # await start_all_tasks()
 
     # 启动 MCP session managers
     async with contextlib.AsyncExitStack() as stack:
-        await stack.enter_async_context(match_mcp.session_manager.run())
-        await stack.enter_async_context(odds_mcp.session_manager.run())
+        # await stack.enter_async_context(match_mcp.session_manager.run())
+        # await stack.enter_async_context(odds_mcp.session_manager.run())
         await stack.enter_async_context(company_mcp.session_manager.run())
         yield
 
@@ -71,8 +72,8 @@ mcp_server = FastAPI(
 )
 
 # 挂载 MCP 服务
-mcp_server.mount(MCPEndpoint.MATCH.value, match_mcp.streamable_http_app())
-mcp_server.mount(MCPEndpoint.ODDS.value, odds_mcp.streamable_http_app())
+# mcp_server.mount(MCPEndpoint.MATCH.value, match_mcp.streamable_http_app())
+# mcp_server.mount(MCPEndpoint.ODDS.value, odds_mcp.streamable_http_app())
 mcp_server.mount(MCPEndpoint.COMPANY.value, company_mcp.streamable_http_app())
 
 

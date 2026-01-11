@@ -15,17 +15,10 @@ class Team(Base):
 
     dqd_id = Column(String(64), nullable=True, unique=True, comment="懂球帝球队ID")
 
-    created_at = Column(
-        DateTime,
-        server_default=func.now(),
-        comment="创建时间",
-    )
+    created_at = Column(DateTime, server_default=func.now(), comment="创建时间")
 
     updated_at = Column(
-        DateTime,
-        server_default=func.now(),
-        server_onupdate=func.now(),
-        comment="更新时间",
+        DateTime, server_default=func.now(), server_onupdate=func.now(), comment="更新时间"
     )
 
     # 表级约束

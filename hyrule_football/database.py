@@ -5,12 +5,18 @@ from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.declarative import declarative_base
 from hyrule_football.config import settings
+import asyncio
+import traceback
 
 Base = declarative_base()
 
 async_engine = create_async_engine(
     settings.MYSQL_DB_URL,
     echo=False,  # 开发时显示 SQL，生产环境改为 False
+    pool_size=5,
+    max_overflow=10,
+    pool_timeout=30,
+    pool_recycle=1800,
     pool_pre_ping=True,  # 连接池健康检查
 )
 
@@ -34,10 +40,7 @@ async def create_database_if_need():
     async with tmp_engine.connect() as conn:
         # 创建数据库
         await conn.execute(
-            text(
-                f"CREATE DATABASE IF NOT EXISTS {db_name} "
-                "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-            )
+            text(f"CREATE DATABASE IF NOT EXISTS {db_name} " "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
         )
 
         print(f"✅ 数据库 {db_name} 创建成功（或已存在）")
@@ -69,5 +72,25 @@ async def db_async_session():
         except Exception:
             await session.rollback()
             raise
+        finally:
+            await session.close()
+
+
+@contextlib.asynccontextmanager
+async def safety_db_async_session():
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except asyncio.CancelledError:
+            await session.rollback()
+            raise
+        except KeyboardInterrupt:
+            await session.rollback()
+            raise
+        except Exception:
+            print(f"❌ safety_db_async_session failed")
+            traceback.print_exc()
+            await session.rollback()
         finally:
             await session.close()

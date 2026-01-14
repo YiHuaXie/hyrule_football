@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import json
 from typing import List, Optional, Dict, Tuple
 from hyrule_football.utils import get_logger, deep_get, error_msg
-from hyrule_football.third_api.httpx import httpx_defaults, try_request, trace_httpx_request
+from hyrule_football.third_api.httpx_utils import httpx_defaults, try_request, trace_httpx_request
 from urllib.parse import urlparse, urljoin
 
 API_URL = "http://backend.aiball365.com"
@@ -113,7 +113,7 @@ async def request_league_match_round(league_id: int, sub_league_id: int, season:
     return response.get("data") or {}
 
 
-async def teams_from_season(league_id: int, season: str) -> Tuple[List[Dict], str]:
+async def teams_from_season(league_id: int, season: str) -> List[Dict]:
     """获取球队"""
 
     def teams_from_total_rank(total_rank: list) -> List[Dict]:
@@ -130,30 +130,30 @@ async def teams_from_season(league_id: int, season: str) -> Tuple[List[Dict], st
     async def teams_from_league_summary():
         summary = await request_league_summary(league_id, season)
         total_rank = deep_get(summary, ["matchScore", "totalRank"])
-        return teams_from_total_rank(total_rank), season, summary
+        return teams_from_total_rank(total_rank), summary
 
     async def teams_from_league_match_score(league_summary):
         sub_arr = deep_get(league_summary, ["schedule", "footballLeagueSubArr"], [])
         if not sub_arr:
-            return [], season
+            return []
 
         target = next((x for x in sub_arr if x.get("footballLeagueSubName") == "联赛"), {})
         sub_league_id = target.get("footballLeagueSubId")
         if not sub_league_id:
-            return [], season
+            return []
 
         response = await request_league_match_score(league_id, sub_league_id, season)
         total_rank = deep_get(response, ["totalRank"])
-        return teams_from_total_rank(total_rank), season
+        return teams_from_total_rank(total_rank)
 
     try:
-        teams, season, summary = await teams_from_league_summary(league_id, season)
+        teams, summary = await teams_from_league_summary()
         if teams:
-            return teams, season
+            return teams
         return await teams_from_league_match_score(summary)
     except Exception as e:
         logger.error(error_msg("teams_from_season", e))
-        return [], season
+        return []
 
 
 async def request_euro_odds_detail(match_id: str) -> dict:
@@ -175,7 +175,7 @@ async def main():
     # res = await request_league_detail(31)
     # print(res)
 
-    res = await request_league_summary(31, "2025-2026")
+    res = await request_league_summary(31, "2022-2023")
     print(res)
 
 

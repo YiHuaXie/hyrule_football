@@ -31,7 +31,7 @@ class LeagueRepo:
         result = await self.db.execute(select(League).filter_by(oh_id=oh_id))
         return result.scalar_one_or_none()
 
-    async def create(self, name: str, oh_id: int) -> League:
+    async def create(self, name: str, oh_id: int, is_cup: int = 0) -> League:
         """创建联赛"""
         result = await self.db.execute(select(League).filter_by(name=name))
         existing = result.scalar_one_or_none()
@@ -39,7 +39,7 @@ class LeagueRepo:
             return existing
 
         # 创建新记录
-        league = League(name=name, oh_id=oh_id)
+        league = League(name=name, oh_id=oh_id, is_cup=is_cup)
         self.db.add(league)
         await self.db.flush()
         return league

@@ -43,8 +43,21 @@ class TeamRepo:
         await self.db.flush()
         return team
 
+    # async def bind_dqd_v2(self, id: int, dqd_id: str = None) -> Optional[Team]:
+    #     existing = await self.get_by_id(id)
+    #     if not existing:
+    #         return None
+
+    #     if existing.dqd_id and existing.dqd_id != dqd_id:
+    #         return existing
+
+    #     existing.dqd_id = dqd_id
+    #     await self.db.flush()
+    #     return existing
+
     async def bind_dqd(self, team: Team, dqd_id: str) -> Team:
         """绑定懂球帝球队ID"""
+        # 如果绑定的ID和已有的ID不一致，则说明是错误的，直接返回
         if team.dqd_id and team.dqd_id != dqd_id:
             return team
 
@@ -52,11 +65,12 @@ class TeamRepo:
         await self.db.flush()
         return team
 
-    async def update(self, team: Team, **kwargs) -> Team:
+    async def update(self, team: Team, **kwargs):
+        if not team:
+            return
         """更新球队信息"""
         orm_apply_patch(team, kwargs, protected_fields={"id", "name", "oh_id", "dqd_id"})
         await self.db.flush()
-        return team
 
     async def delete(self, team_id: int) -> bool:
         """删除球队"""

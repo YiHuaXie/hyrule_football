@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, model_validator
 from typing_extensions import Annotated
+from typing import List
 
 
 class StandardOddsBase(BaseModel):
@@ -49,3 +50,45 @@ class StandardOddsEuroRange(BaseModel):
         """获取范围表述字段"""
 
         return f"胜范围: {self.low_w} ~ {self.hight_w}, 平范围: {self.low_d} ~ {self.hight_d}, 负范围: {self.low_l} ~ {self.hight_l}"
+
+
+class StandardOddsSchema(BaseModel):
+    class EuroRange(BaseModel):
+        low_w: float
+        hight_w: float
+        low_d: float
+        hight_d: float
+        low_l: float
+        hight_l: float
+
+        @property
+        def range_description(self) -> str:
+            return f"胜范围: {self.low_w} ~ {self.hight_w}, 平范围: {self.low_d} ~ {self.hight_d}, 负范围: {self.low_l} ~ {self.hight_l}"
+
+    system: Annotated[str, Field(..., description="体系名称")]
+    interval: Annotated[str, Field(..., description="区间")]
+    w: Annotated[float, Field(..., description="欧指-胜赔率(Win)")]
+    d: Annotated[float, Field(..., description="欧指-平赔率(Draw)")]
+    l: Annotated[float, Field(..., description="欧指-负赔率(Lose)")]
+    return_rate: Annotated[float, Field(..., description="返还率(%)")]
+    goal_line: Annotated[float, Field(..., description="亚盘-让球盘口")]
+    water_level: Annotated[str, Field(..., description="亚盘-水位（赔率）")]
+
+    model_config = {
+        "populate_by_name": True,  # 支持英文字段名或别名
+    }
+
+    @classmethod
+    def euro_range_from_odds_list(cls, odds_list: List["StandardOddsSchema"]):
+        w_list = [odds.w for odds in odds_list]
+        d_list = [odds.d for odds in odds_list]
+        l_list = [odds.l for odds in odds_list]
+
+        return cls.EuroRange(
+            low_w=min(w_list),
+            hight_w=max(w_list),
+            low_d=min(d_list),
+            hight_d=max(d_list),
+            low_l=min(l_list),
+            hight_l=max(l_list),
+        )

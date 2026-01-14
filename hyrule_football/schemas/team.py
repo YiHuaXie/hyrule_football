@@ -1,11 +1,23 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import ClassVar, Tuple
+from typing import ClassVar, Tuple, Optional
+from hyrule_football.utils import dqd_team_id_from_dqd
 
 
-class TeamRankSchema(BaseModel):
+class TeamSchemaDTO(BaseModel):
+    id: int
+    name: str
+    oh_id: int
+    dqd_id: Optional[str] = None
+
+    model_config = {
+        "from_attributes": True,
+    }
+
+
+class TeamSchemaRank(BaseModel):
     """球队排名模型"""
 
-    # 排名不准  不能用排名做参考
+    # 排名不准 不能用排名做参考
     TEAM_STAT_FIELDS: ClassVar[Tuple[str, ...]] = (
         "matches_total",
         "w",
@@ -61,10 +73,10 @@ class TeamRankSchema(BaseModel):
         return tuple(getattr(self, f) for f in self.TEAM_STAT_FIELDS)
 
     @staticmethod
-    def is_same_team(team1: "TeamRankSchema", team2: "TeamRankSchema") -> bool:
-        if team1.id and team2.id and team1.id == team2.id:
-            return True
-
+    def is_same_team(team1: "TeamSchemaRank", team2: "TeamSchemaRank") -> bool:
+        """判断两个球队是否为同一支球队"""
+        # 这个算法有限制，对于完赛的赛季通过积分榜判断是否为同一支球队是大概率的准确的
+        # 如果赛季刚开始，指纹数据就不是很准了
         if team1.name and team2.name and team1.name == team2.name:
             return True
 
@@ -74,19 +86,12 @@ class TeamRankSchema(BaseModel):
         return team1._stat_fingerprint() == team2._stat_fingerprint()
 
     @classmethod
-    def from_source(cls, data: dict, mapping: dict) -> "TeamRankSchema":
+    def from_source(cls, data: dict, mapping: dict) -> "TeamSchemaRank":
         return cls(**{field: data.get(src) for field, src in mapping.items()})
 
     @classmethod
-    def from_dqd_dict(cls, data: dict) -> "TeamRankSchema":
-        team_id = data.get("team_id")
-        if team_id:
-            try:
-                team_id = int(team_id)
-                if team_id > 50000000:
-                    data["team_id"] = team_id - 50000000
-            except (ValueError, TypeError):
-                pass
+    def from_dqd_dict(cls, data: dict) -> "TeamSchemaRank":
+        data["team_id"] = dqd_team_id_from_dqd(data.get("team_id"))
 
         DQD_MAPPING = {
             "id": "team_id",
@@ -101,14 +106,10 @@ class TeamRankSchema(BaseModel):
             "points": "points",
         }
 
-        try:
-            return cls.from_source(data, DQD_MAPPING)
-        except Exception as e:
-            print(f"❌ TeamRankSchema received invalid data: {e}")
-            return cls()
+        return cls.from_source(data, DQD_MAPPING)
 
     @classmethod
-    def from_oh_dict(cls, data: dict) -> "TeamRankSchema":
+    def from_oh_dict(cls, data: dict) -> "TeamSchemaRank":
         OH_MAPPING = {
             "id": "teamId",
             "name": "teamName",

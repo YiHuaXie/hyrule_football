@@ -1,53 +1,110 @@
 from hyrule_football.repositories.league_repo import LeagueRepo
 from hyrule_football.third_api import oh_api as oh
 from hyrule_football.third_api import dqd_api as dqd
-from hyrule_football.utils import get_logger, error_msg, Response, season_sort_key, Platform
-from sqlalchemy.ext.asyncio import AsyncSession
-from hyrule_football.models import League
+from hyrule_football.utils import get_logger, error_msg, season_sort_key, Platform
+from hyrule_football.service.base_sync_service import BaseSyncService
+from hyrule_football.database import safety_db_async_session
 from hyrule_football.schemas import LeagueSchema, SeasonSchema
-from typing import List, Tuple, TypeAlias, Optional
-from abc import ABC, abstractmethod
+from typing import List, Set, Dict
 
 logger = get_logger(__name__)
 
 filter_leagues_for_testing = ["英超", "意甲", "德甲", "西甲", "法甲", "欧冠杯", "欧洲杯"]
 
 
-class LeagueSyncService(ABC):
+class LeagueMapping:
 
-    def __init__(self, db: AsyncSession):
-        self.repo = LeagueRepo(db)
-        self.mapping = LeagueMapping(db)
+    async def create_leagues_from_main(self, leagues: List[LeagueSchema]) -> List[LeagueSchema]:
+        result = []
+        async with safety_db_async_session() as db:
+            repo = LeagueRepo(db)
+            for schema in leagues:
+                if not schema:
+                    continue
+                try:
+                    await repo.create(schema.name, schema.id, schema.is_cup)
+                    result.append(schema)
+                except Exception as e:
+                    logger.error(f"create_leagues_from_main, {e}")
+                    continue
 
-    @abstractmethod
-    async def sync_leagues(self) -> List[League]:
-        pass
+            await db.commit()
+        return result
 
-    @abstractmethod
-    async def sync_seasons_by_league(self, league: League) -> bool:
-        pass
+    async def mapping_leagues_from_dqd(self, leagues: List[LeagueSchema]) -> List[LeagueSchema]:
+        result = []
+        async with safety_db_async_session() as db:
+            repo = LeagueRepo(db)
+            for schema in leagues:
+                if not schema:
+                    continue
+                try:
+                    league = await repo.get_by_name(schema.name)
+                    if league:
+                        await repo.bind_dqd(league, schema.id)
+                        result.append(schema)
+                except Exception as e:
+                    logger.error(f"mapping_leagues_from_dqd, {e}")
+                    continue
 
-    def merge_seasons(self, db_seasons: List[SeasonSchema], new_seasons: List[SeasonSchema]) -> List[dict]:
-        merged = (db_seasons or []) + (new_seasons or [])
-        unique = {season.name: season for season in merged if season.name}
-        sorted_seasons = sorted(unique.values(), key=lambda x: season_sort_key(x.name), reverse=True)
-        return [s.model_dump() for s in sorted_seasons]
+            await db.commit()
+        return result
 
 
-class OHLeagueSyncService(LeagueSyncService):
+class LeagueSyncService(BaseSyncService):
 
-    async def sync_leagues(self) -> List[League]:
+    def __init__(self, platforms: Set[Platform]):
+        super().__init__(platforms)
+        self.mapping = LeagueMapping()
+
+    async def sync_leagues(self) -> Dict[Platform, List[LeagueSchema]]:
+        result = {}
+        if Platform.OH in self.platforms:
+            leagues = await oh_sync_leagues(self.mapping)
+            result[Platform.OH] = leagues
+        if Platform.DQD in self.platforms:
+            leagues = await dqd_sync_leagues(self.mapping)
+            result[Platform.DQD] = leagues
+        return result
+
+    async def sync_seasons_by_league(self, league_id: int) -> Dict[Platform, bool]:
+        result = {}
+        if Platform.OH in self.platforms:
+            result[Platform.OH] = await oh_sync_seasons_by_league(league_id)
+        if Platform.DQD in self.platforms:
+            result[Platform.DQD] = await dqd_sync_seasons_by_league(league_id)
+        return result
+
+
+async def oh_sync_leagues(mapping: LeagueMapping) -> List[LeagueSchema]:
+    try:
+        leagues = await oh.request_league_list()
+        schemas = [LeagueSchema.from_oh_dict(l) for l in leagues]
+        return await mapping.create_leagues_from_main(schemas)
+    except Exception as e:
+        logger.error(error_msg("oh_sync_leagues", e))
+        return []
+
+
+async def dqd_sync_leagues(mapping: LeagueMapping) -> List[LeagueSchema]:
+    try:
+        leagues = await dqd.request_league_list()
+        # schemas = [schema for l in leagues if (schema := LeagueSchema.from_dqd_dict(l)) is not None]
+        schemas = [LeagueSchema.from_dqd_dict(l) for l in leagues]
+        return await mapping.mapping_leagues_from_dqd(schemas)
+    except Exception as e:
+        logger.error(error_msg("dqd_sync_leagues", e))
+        return []
+
+
+async def oh_sync_seasons_by_league(league_id: int) -> bool:
+    async with safety_db_async_session() as db:
         try:
-            leagues = await oh.request_league_list()
-            schemas = [LeagueSchema.from_oh_dict(l) for l in leagues]
-            tuples = await self.mapping.create_leagues_from_main(schemas)
-            return [l for l, _ in tuples]
-        except Exception as e:
-            logger.error(error_msg("oh.sync_leagues", e))
-            return []
+            repo = LeagueRepo(db)
+            league = await repo.get_by_id(league_id)
+            if not league:
+                raise ValueError(f"league {league_id} not found")
 
-    async def sync_seasons_by_league(self, league: League) -> bool:
-        try:
             response = await oh.request_league_detail(league.oh_id)
             detail = response.get("data", {})
             detail["cup"] = league.is_cup
@@ -56,94 +113,48 @@ class OHLeagueSyncService(LeagueSyncService):
             if not schema:
                 return False
 
-            await self.repo.update(
+            await repo.update(
                 league,
                 oh_season=schema.season.model_dump(),
-                oh_seasons=self.merge_seasons(
+                oh_seasons=_merge_seasons(
                     [SeasonSchema(league=league.name, **s) for s in league.oh_seasons],
                     schema.seasons,
                 ),
             )
-            await self.repo.commit()
             return True
         except Exception as e:
-            logger.error(error_msg("oh.sync_league_seasons", e))
+            logger.exception(f"oh_sync_seasons_by_league, {e}")
             return False
 
 
-class DQDLeagueSyncService(LeagueSyncService):
-
-    async def sync_leagues(self) -> List[League]:
+async def dqd_sync_seasons_by_league(league_id: int) -> bool:
+    async with safety_db_async_session() as db:
         try:
-            leagues = await dqd.request_league_list()
-            schemas = [LeagueSchema.from_dqd_dict(l) for l in leagues]
-            tuples = await self.mapping.mapping_leagues_from_dqd(schemas)
-            return [l for l, _ in tuples]
-        except Exception as e:
-            logger.error(error_msg("dqd.sync_leagues", e))
-            return []
+            repo = LeagueRepo(db)
+            league = await repo.get_by_id(league_id)
+            if not league:
+                raise ValueError(f"league {league_id} not found")
 
-    async def sync_seasons_by_league(self, league: League) -> bool:
-        try:
             seasons = await dqd.request_league_seasons(league.dqd_id)
             if not seasons:
                 return False
 
-            seasons = self.merge_seasons(
-                [SeasonSchema(league=league.name, **s) for s in league.dqd_seasons],
-                [SeasonSchema(league=league.name, **s) for s in seasons],
-            )
-
-            await self.repo.update(
+            await repo.update(
                 league,
                 dqd_season=seasons[0] if seasons else None,
-                dqd_seasons=seasons,
+                dqd_seasons=_merge_seasons(
+                    [SeasonSchema(league=league.name, **s) for s in league.dqd_seasons],
+                    [SeasonSchema(league=league.name, **s) for s in seasons],
+                ),
             )
-            await self.repo.commit()
             return True
         except Exception as e:
-            logger.error(error_msg("dqd.sync_league_seasons", e))
+            logger.error(f"dqd_sync_seasons_by_league, {e}")
             return False
 
 
-LeagueMappingResult: TypeAlias = List[Tuple[League, LeagueSchema]]
-
-
-class LeagueMapping:
-
-    def __init__(self, db: AsyncSession):
-        self.repo = LeagueRepo(db)
-
-    async def create_leagues_from_main(self, leagues: List[LeagueSchema]) -> LeagueMappingResult:
-        result = []
-        for schema in leagues:
-            try:
-                # 保去空不保去重
-                if not schema:
-                    continue
-                league = await self.repo.create(schema.name, schema.id)
-                await self.repo.update(league, is_cup=schema.is_cup)
-                result.append((league, schema))
-            except Exception as e:
-                logger.error(error_msg("create_leagues_from_main.repo.create", e))
-                continue
-
-        await self.repo.commit()
-        return result
-
-    async def mapping_leagues_from_dqd(self, leagues: List[LeagueSchema]) -> LeagueMappingResult:
-        result = []
-        for schema in leagues:
-            try:
-                if not schema:
-                    continue
-                league = await self.repo.get_by_name(schema.name)
-                if league:
-                    await self.repo.bind_dqd(league, schema.id)
-                    result.append((league, schema))
-            except Exception as e:
-                logger.error(error_msg("mapping_leagues_from_dqd.repo.bind_dqd", e))
-                continue
-
-        await self.repo.commit()
-        return result
+def _merge_seasons(db_seasons: List[SeasonSchema], new_seasons: List[SeasonSchema]) -> List[dict]:
+    merged = (db_seasons or []) + (new_seasons or [])
+    unique = {season.name: season for season in merged if season.name}
+    sorted_seasons = sorted(unique.values(), key=lambda x: season_sort_key(x.name), reverse=True)
+    return [s.model_dump() for s in sorted_seasons]

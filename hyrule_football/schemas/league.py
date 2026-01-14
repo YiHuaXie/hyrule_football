@@ -1,8 +1,21 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Tuple
-from hyrule_football.utils import deep_get, specific_league_name
+from typing import Optional, List
+from hyrule_football.utils import specific_league_name
 from hyrule_football.schemas.season import SeasonSchema
-from hyrule_football.models import League
+
+
+class LeagueDTO(BaseModel):
+    id: int
+    name: str
+    is_cup: int
+    oh_id: int
+    oh_seasons: List[SeasonSchema] = []
+    dqd_id: str
+    dqd_seasons: List[SeasonSchema] = []
+
+    model_config = {
+        "from_attributes": True,
+    }
 
 
 class LeagueSchema(BaseModel):
@@ -17,12 +30,8 @@ class LeagueSchema(BaseModel):
     def from_oh_dict(data: dict) -> Optional["LeagueSchema"]:
         league_id = data.get("leagueId")
         league_name = specific_league_name(data.get("leagueName"))
-
         if not league_id or not league_name:
             return None
-
-        # season = data.get("season")
-        # season = SeasonSchema(league=league_name, id=season, name=season) if season else None
 
         seasons = data.get("seasonList", [])
         seasons = [SeasonSchema(league=league_name, id=s, name=s) for s in seasons if s]
@@ -41,13 +50,6 @@ class LeagueSchema(BaseModel):
         league_name = specific_league_name(data.get("label"))
         if not league_id or not league_name:
             return None
-
-        # season_id = data.get("season_id")
-        # season_name = deep_get(data, ["season", "title"])
-        # if season_id and season_name:
-        #     season = SeasonSchema(league=league_name, id=season_id, name=season_name)
-        # else:
-        #     season = None
 
         return LeagueSchema(id=league_id, name=league_name)
 
@@ -78,3 +80,23 @@ class DQDLeagueSchedule(BaseModel):
                 return f"{r.season_id}_{r.round_id}_{r.gameweek}"
 
         return ""
+
+
+async def main():
+    from hyrule_football.repositories.league_repo import LeagueRepo
+    from hyrule_football.database import db_async_session
+
+    async with db_async_session() as db:
+        try:
+            repo = LeagueRepo(db)
+            league = await repo.get_by_name("英超")
+            schema = LeagueDTO.model_validate(league)
+            print(schema.model_dump())
+        except Exception as e:
+            print(f"error: {e}")
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(main())

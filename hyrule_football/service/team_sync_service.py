@@ -1,118 +1,119 @@
-from hyrule_football.database import db_async_session
+from hyrule_football.database import db_async_session, safety_db_async_session
 from hyrule_football.repositories.team_repo import TeamRepo
 from hyrule_football.repositories.league_repo import LeagueRepo
 from hyrule_football.models import League, Team
 from hyrule_football.third_api import oh_api as oh
 from hyrule_football.third_api import dqd_api as dqd
-from hyrule_football.schemas import TeamRankSchema, Response
-from hyrule_football.utils import get_logger, error_msg, specific_season_name
-from typing import List, Tuple, TypeAlias, Dict, Optional
-from sqlalchemy.ext.asyncio import AsyncSession
-import asyncio
+from hyrule_football.schemas import TeamSchemaDTO, TeamSchemaRank
+from hyrule_football.service.base_sync_service import BaseSyncService
+from hyrule_football.utils import get_logger, specific_season_name, Platform
+from typing import List, Tuple, Set
 
 logger = get_logger(__name__)
 
 
-class TeamSyncInterface:
-
-    @staticmethod
-    async def sync_teams_from_season(db: AsyncSession, league: str, season: str) -> Response[List[Team]]:
-        league_repo = LeagueRepo(db)
-        db_league = await league_repo.get_by_name(league)
-        if not league:
-            return Response.failed(f"{league} 不存在")
-
-        if league.is_cup == 1:
-            return Response.failed(f"{league} 是杯赛，无法同步球队")
-
-        standard_season = specific_season_name(league.name, season)
-        if not standard_season:
-            return Response.failed(f"{season} 不存在")
-
-        teams = await TeamSyncService(db).sync_teams_from_season(db_league, standard_season)
-        return Response.success(data=teams)
-
-
-class TeamSyncService:
-
-    def __init__(self, db: AsyncSession):
-        self.db = db
-        self.mapping = TeamMapping(db)
-
-    async def sync_teams_from_season(self, league: League, season: str) -> List[Team]:
-        if league.is_cup == 1:
-            return []
-
-        standard_season = specific_season_name(league.name, season)
-        if not season:
-            return []
-        try:
-            # 1. 同步欧核球队
-            teams, season = await oh.teams_from_season(league.oh_id, season)
-            team_schemas = [TeamRankSchema.from_oh_dict(t) for t in teams]
-            tuples = await self.mapping.mapping_teams_from_main(team_schemas)
-
-            season = specific_season_name(league.name, season)
-
-            # 2. 同步懂球帝球队
-            dqd_teams = []
-            dqd_seasons = league.dqd_seasons or []
-            dqd_season = next((s for s in dqd_seasons if s.get("name") == season), None)
-            if dqd_season:
-                dqd_teams = await dqd.teams_from_season(dqd_season.get("id"))
-                dqd_team_schemas = [TeamRankSchema.from_dqd_dict(t) for t in dqd_teams]
-                teams = await self.mapping.mapping_teams_from_dqd(dqd_team_schemas, tuples)
-
-            await self.db.commit()
-            return [t for t, _ in tuples]
-        except Exception as e:
-            logger.error(error_msg("sync_teams_from_season", e))
-            return []
-
-
-TeamMappingResult: TypeAlias = List[Tuple[Team, TeamRankSchema]]
-
-
 class TeamMapping:
 
-    def __init__(self, db: AsyncSession):
-        self.repo = TeamRepo(db)
+    def __init__(self):
+        self.main_teams: List[Tuple[TeamSchemaDTO, TeamSchemaRank]] = []
 
-    async def mapping_teams_from_main(self, teams: List[TeamRankSchema]) -> TeamMappingResult:
-        result = []
+    async def mapping_teams_from_main(self, teams: List[TeamSchemaRank]):
+        self.main_teams = []
         db_team_ids = set()
-        for team in teams:
-            db_team = await self.repo.create(team.name, team.id)
-            if db_team.id not in db_team_ids:
-                result.append((db_team, team))
-                db_team_ids.add(db_team.id)
+        async with safety_db_async_session() as db:
+            try:
+                repo = TeamRepo(db)
+                for team in teams:
+                    db_team = await repo.create(team.name, team.id)
+                    if db_team.id not in db_team_ids:
+                        team_dto = TeamSchemaDTO.model_validate(db_team)
+                        self.main_teams.append((team_dto, team))
+                        db_team_ids.add(db_team.id)
+                await db.commit()
+            except Exception as e:
+                self.main_teams = []
+                logger.error(f"mapping_teams_from_main failed: {e}")
 
-        return result
-
-    async def mapping_teams_from_dqd(self, dqd_teams: List[TeamRankSchema], tuples: TeamMappingResult):
-        for db_team, team in tuples:
-            matched = next((t for t in dqd_teams if TeamRankSchema.is_same_team(team, t)), None)
-            if matched:
-                await self.repo.bind_dqd(db_team, str(matched.id))
-
-
-async def main():
-    async with db_async_session() as db:
-        from hyrule_football.repositories.league_repo import LeagueRepo
-
-        league_repo = LeagueRepo(db)
-        team_service = TeamSyncService(db)
-
-        mzy = await league_repo.get_by_name("美职业")
-        bj = await league_repo.get_by_name("比甲")
-        ac = await league_repo.get_by_name("爱超")
-        yc = await league_repo.get_by_name("英超")
-        all_leagues = [(mzy, "2026"), (mzy, "2025"), (yc, "2025-2026"), (yc, "2024-2025")]  # ,
-        for league, season in all_leagues:
-            print(f"同步 {league.name} {season} 赛季下的球队...")
-            teams = await team_service.sync_teams_from_season(league, season)
-            print(f"✅ {league.name} {season} 赛季下的球队同步完成，共 {len(teams)} 支球队")
+    async def mapping_teams_from_dqd(self, dqd_teams: List[TeamSchemaRank]):
+        async with safety_db_async_session() as db:
+            try:
+                repo = TeamRepo(db)
+                for team_dto, team in self.main_teams:
+                    db_team = await repo.get_by_id(team_dto.id)
+                    matched_schema = next((t for t in dqd_teams if TeamSchemaRank.is_same_team(team, t)), None)
+                    if matched_schema:
+                        # print(f"{"*" * 30}")
+                        # print(f"db team id:{db_team.id}, oh id:{db_team.oh_id}, dqd id:{db_team.dqd_id}")
+                        # print(f"oh team:{team}")
+                        # print(f"dqd team:{matched_schema}")
+                        # print(f"{"*" * 30}")
+                        await repo.bind_dqd(db_team, str(matched_schema.id))
+                        team_dto.dqd_id = db_team.dqd_id
+                await db.commit()
+            except Exception as e:
+                logger.error(f"mapping_teams_from_dqd failed: {e}")
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+class TeamSyncService(BaseSyncService):
+
+    def __init__(self, platforms: Set[Platform]):
+        super().__init__(platforms)
+        if Platform.OH not in platforms:
+            platforms.add(Platform.OH)
+        self.mapping = TeamMapping()
+
+    async def sync_teams_from_season(self, league_name: str, season_name: str) -> List[TeamSchemaDTO]:
+        try:
+            async with db_async_session() as db:
+                league = await LeagueRepo(db).get_by_name(league_name)
+                if not league:
+                    raise ValueError(f"{league_name} not found")
+                if league.is_cup == 1:
+                    raise ValueError(f"{league.name} is a cup, no teams to sync")
+
+            specific_season = specific_season_name(league.name, season_name)
+            if not specific_season:
+                raise ValueError(f"{league.name} {season_name} is not a valid season")
+
+            await oh_sync_teams_from_season(specific_season, league, self.mapping)
+            if Platform.DQD in self.platforms:
+                await dqd_sync_teams_from_season(specific_season, league, self.mapping)
+
+            return [t for t, _ in self.mapping.main_teams]
+        except Exception as e:
+            logger.error(f"sync_teams_from_season failed: {e}")
+            return []
+
+
+async def oh_sync_teams_from_season(specific_season: str, league: League, mapping: TeamMapping):
+    try:
+        seasons = league.oh_seasons or []
+        if not seasons:
+            raise ValueError(f"{league.name} has no oh seasons")
+        season_id = next((s.get("id") for s in seasons if s.get("name") == specific_season), None)
+        if not season_id:
+            raise ValueError(f"{league.name} {specific_season} has no oh season id")
+
+        teams = await oh.teams_from_season(league.oh_id, season_id)
+        team_schemas = [TeamSchemaRank.from_oh_dict(t) for t in teams]
+        await mapping.mapping_teams_from_main(team_schemas)
+        if len(mapping.main_teams) == 0:
+            raise ValueError(f"no main teams from oh")
+    except Exception as e:
+        logger.error(f"oh_sync_teams_from_season failed: {e}")
+        raise e
+
+
+async def dqd_sync_teams_from_season(specific_season: str, league: League, mapping: TeamMapping):
+    try:
+        seasons = league.dqd_seasons or []
+        if not seasons:
+            raise ValueError(f"{league.name} has no dqd seasons")
+        season_id = next((s.get("id") for s in seasons if s.get("name") == specific_season), None)
+        if not season_id:
+            raise ValueError(f"{league.name} {specific_season} has no dqd season id")
+        teams = await dqd.teams_from_season(season_id)
+        team_schemas = [TeamSchemaRank.from_dqd_dict(t) for t in teams]
+        await mapping.mapping_teams_from_dqd(team_schemas)
+    except Exception as e:
+        logger.error(f"dqd_sync_teams_from_season failed: {e}")

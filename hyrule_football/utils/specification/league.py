@@ -6,9 +6,9 @@ from typing import Optional, Dict, List
 # ========== 加载别名映射表 ==========
 def load_league_aliases() -> Dict[str, List[str]]:
     current_file = Path(__file__)
-    hyrule_root = current_file.parent.parent
+    hyrule_root = current_file.parent.parent.parent
     json_path = hyrule_root / "data" / "league_aliases.json"
-
+    # print(f"league_aliases.json path: {json_path}")
     if not json_path.exists():
         return {}
 
@@ -29,12 +29,10 @@ def specific_league_name(target_name: str) -> Optional[str]:
         return None
 
     target_name = target_name.strip()
-
     for standard_name, aliases in LEAGUE_ALIASES.items():
         if target_name == standard_name:
             return standard_name
 
         if target_name in aliases:
             return standard_name
-
     return None

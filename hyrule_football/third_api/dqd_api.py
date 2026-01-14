@@ -4,7 +4,7 @@ import execjs
 from urllib.parse import urljoin
 from typing import List, Optional, Dict
 from hyrule_football.utils import get_logger, deep_get, error_msg
-from hyrule_football.third_api.httpx import httpx_defaults, try_request, trace_httpx_request
+from hyrule_football.third_api.httpx_utils import httpx_defaults, try_request, trace_httpx_request
 import httpx
 
 

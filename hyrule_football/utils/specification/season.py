@@ -1,4 +1,4 @@
-from hyrule_football.utils import deep_get
+from hyrule_football.utils.deep_get import deep_get
 
 SEASON_MAP = {
     "欧洲杯": {

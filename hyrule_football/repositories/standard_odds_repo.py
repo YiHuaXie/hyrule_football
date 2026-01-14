@@ -6,18 +6,20 @@ from hyrule_football.models import StandardOdds
 
 
 class StandardOddsRepo:
-    """标准赔率数据访问层"""
+
+    def __init__(self, db: AsyncSession):
+        self.db = db
 
     @staticmethod
-    async def get_by_system(db: AsyncSession, system: str) -> Optional[StandardOdds]:
+    async def get_by_system(self, system: str) -> Optional[StandardOdds]:
         """根据体系名称获取标准赔率数据"""
-        result = await db.execute(select(StandardOdds).filter_by(system=system))
+        result = await self.db.execute(select(StandardOdds).filter_by(system=system))
         return result.scalar_one_or_none()
 
     @staticmethod
-    async def create_or_update(db: AsyncSession, system: str, data: List[Dict]) -> StandardOdds:
+    async def create_or_update(self, system: str, data: List[Dict]) -> StandardOdds:
         """创建或更新体系的赔率数据"""
-        existing = await StandardOddsRepo.get_by_system(db, system)
+        existing = await self.get_by_system(system)
 
         if existing:
             # 更新现有记录
@@ -27,6 +29,6 @@ class StandardOddsRepo:
         else:
             # 创建新记录
             odds = StandardOdds(system=system, data=data)
-            db.add(odds)
-            await db.flush()
+            self.db.add(odds)
+            await self.db.flush()
             return odds

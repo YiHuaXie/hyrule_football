@@ -152,7 +152,7 @@ async def request_team_points_rank_by_season(season_id: str) -> dict:
     return response or {}
 
 
-async def teams_from_season(season_id: str) -> List[dict]:
+async def request_teams_from_season(season_id: str) -> List[dict]:
     try:
         response = await request_team_points_rank_by_season(season_id)
         rounds = deep_get(response, ["content", "rounds"])
@@ -176,6 +176,10 @@ async def teams_from_season(season_id: str) -> List[dict]:
     except Exception as e:
         logger.error(error_msg("teams_from_season", e))
         return []
+
+
+async def request_match_detail(match_id: str) -> dict:
+    """请求懂球帝的比赛详情"""
 
 
 async def main():

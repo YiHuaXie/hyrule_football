@@ -113,7 +113,7 @@ async def request_league_match_round(league_id: int, sub_league_id: int, season:
     return response.get("data") or {}
 
 
-async def teams_from_season(league_id: int, season: str) -> List[Dict]:
+async def request_teams_from_season(league_id: int, season: str) -> List[Dict]:
     """获取球队"""
 
     def teams_from_total_rank(total_rank: list) -> List[Dict]:
@@ -154,6 +154,10 @@ async def teams_from_season(league_id: int, season: str) -> List[Dict]:
     except Exception as e:
         logger.error(error_msg("teams_from_season", e))
         return []
+
+
+async def request_match_detail(matched_id: int) -> Dict:
+    pass
 
 
 async def request_euro_odds_detail(match_id: str) -> dict:

@@ -94,7 +94,7 @@ async def oh_sync_teams_from_season(specific_season: str, league: League, mappin
         if not season_id:
             raise ValueError(f"{league.name} {specific_season} has no oh season id")
 
-        teams = await oh.teams_from_season(league.oh_id, season_id)
+        teams = await oh.request_teams_from_season(league.oh_id, season_id)
         team_schemas = [TeamSchemaRank.from_oh_dict(t) for t in teams]
         await mapping.mapping_teams_from_main(team_schemas)
         if len(mapping.main_teams) == 0:
@@ -112,7 +112,7 @@ async def dqd_sync_teams_from_season(specific_season: str, league: League, mappi
         season_id = next((s.get("id") for s in seasons if s.get("name") == specific_season), None)
         if not season_id:
             raise ValueError(f"{league.name} {specific_season} has no dqd season id")
-        teams = await dqd.teams_from_season(season_id)
+        teams = await dqd.request_teams_from_season(season_id)
         team_schemas = [TeamSchemaRank.from_dqd_dict(t) for t in teams]
         await mapping.mapping_teams_from_dqd(team_schemas)
     except Exception as e:
